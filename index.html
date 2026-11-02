@@ -134,8 +134,10 @@ h1 {
 #cameraPreview {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transform: none;
+  object-fit: contain;
+
+  /* PAPARAN KAMERA MIRROR */
+  transform: scaleX(-1);
 }
 
 #cameraPlaceholder {
@@ -201,7 +203,6 @@ button:disabled { opacity: .5; }
 #touchMode { background: #1976d2; }
 #restartButton { background: #f57c00; }
 
-/* POSTER FULLSCREEN */
 #winScreen {
   display: none;
   position: fixed;
@@ -224,7 +225,6 @@ button:disabled { opacity: .5; }
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  border-radius: 0;
 }
 
 #winScreen h2 { display: none; }
@@ -286,13 +286,13 @@ button:disabled { opacity: .5; }
 
 <div id="winScreen">
   <h2>TAHNIAH!</h2>
-  <img src="./poster.png" alt="Poster Tahniah" id="posterImage">
+  <img src="./poster.png" alt="Poster Tahniah">
   <button onclick="restartGame()">↻ Main Semula</button>
 </div>
 
 <script>
 /* =========================================
-   TETAPAN
+   TETAPAN PERMAINAN
 ========================================= */
 
 const targetLetters = ['ا','ل','ق','ر','ء','ا','ن'];
@@ -368,7 +368,7 @@ function createGame() {
 }
 
 /* =========================================
-   MOD SENTUH
+   MOD SKRIN SENTUH
 ========================================= */
 
 function addTouchEvents(card) {
@@ -583,16 +583,14 @@ function updateCursor(x, y, mode) {
   if (mode === 'drag') cursor.classList.add('dragging');
 }
 
-/*
-  PENTING:
-  Kamera dan koordinat tangan tidak dimirror.
-  Kedua-duanya menggunakan koordinat X asal.
-*/
-
 function mapHandToGame(indexX, indexY) {
   const rect = interactionArea.getBoundingClientRect();
 
-  const x = rect.left + indexX * rect.width;
+  /*
+    Kamera dipaparkan secara mirror.
+    Oleh itu, koordinat X kursor diterbalikkan.
+  */
+  const x = rect.left + (1 - indexX) * rect.width;
   const y = rect.top + indexY * rect.height;
 
   return {x, y};
@@ -613,7 +611,7 @@ function setStatus(message, mode = 'normal') {
 }
 
 /* =========================================
-   MEDIAPIPE - PAPARAN TANPA MIRROR
+   MEDIAPIPE
 ========================================= */
 
 function onHandResults(results) {
@@ -622,8 +620,8 @@ function onHandResults(results) {
   previewCtx.clearRect(0, 0, preview.width, preview.height);
 
   if (results.image) {
-    // Tiada translate atau scale(-1,1).
-    // Imej dipaparkan mengikut orientasi asal.
+    // Imej asal dihantar ke canvas.
+    // CSS akan memirror paparan kamera.
     previewCtx.drawImage(
       results.image,
       0,
@@ -788,8 +786,6 @@ function processFrame() {
     processingCanvas.width = width;
     processingCanvas.height = height;
 
-    // Tingkatkan kecerahan dan kontras untuk MediaPipe.
-    // Tiada transformasi mirror.
     processingCtx.filter = 'brightness(1.12) contrast(1.12)';
     processingCtx.drawImage(video, 0, 0, width, height);
 
@@ -872,7 +868,7 @@ async function startCamera() {
     smoothX = null;
     smoothY = null;
 
-    setStatus('Kamera aktif. Tunjukkan tangan di hadapan kamera.');
+    setStatus('Kamera mirror aktif. Tunjukkan tangan di hadapan kamera.');
 
     requestAnimationFrame(processFrame);
 
