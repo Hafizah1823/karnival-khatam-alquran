@@ -23,8 +23,7 @@ body {
   min-height: 100vh;
   font-family: Arial, sans-serif;
   color: white;
-  background:
-    radial-gradient(circle at top, #28644d, #123d31 55%, #09271f);
+  background: radial-gradient(circle at top, #28644d, #123d31 55%, #09271f);
 }
 
 button {
@@ -32,7 +31,7 @@ button {
   cursor: pointer;
   font-weight: bold;
   border-radius: 12px;
-  padding: 12px 20px;
+  padding: 12px 18px;
   font-size: 15px;
 }
 
@@ -48,7 +47,7 @@ button {
 header {
   text-align: center;
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 h1 {
@@ -59,7 +58,7 @@ h1 {
 
 .subtitle {
   font-size: 14px;
-  color: #fff2d2;
+  color: var(--cream);
   margin: 0;
 }
 
@@ -68,9 +67,9 @@ h1 {
   color: #ffe6a8;
   font-size: 14px;
   margin: 12px 0;
+  max-width: 700px;
 }
 
-/* Kawasan permainan */
 #gameArea {
   width: min(100%, 1050px);
   display: flex;
@@ -79,7 +78,8 @@ h1 {
   gap: 17px;
 }
 
-/* Kotak jawapan */
+/* KOTAK JAWAPAN */
+
 #answerSlots {
   width: 100%;
   display: flex;
@@ -107,7 +107,13 @@ h1 {
   background: rgba(255,242,210,0.16);
 }
 
-/* Kad huruf */
+.slot.highlight {
+  background: rgba(230,196,119,0.35);
+  border-style: solid;
+}
+
+/* KAD HURUF */
+
 #letterBank {
   width: 100%;
   display: flex;
@@ -138,19 +144,16 @@ h1 {
   z-index: 2;
 }
 
-.letter-card:active {
-  cursor: grabbing;
-}
-
 .letter-card.dragging {
   position: fixed !important;
-  z-index: 1000;
-  pointer-events: none;
-  transform: scale(1.08);
+  z-index: 9999 !important;
+  pointer-events: none !important;
+  transform: scale(1.12);
   box-shadow: 0 8px 20px #0008;
 }
 
-/* Kamera - sentiasa di tengah bawah */
+/* KAMERA */
+
 #cameraSection {
   width: 100%;
   display: flex;
@@ -187,13 +190,13 @@ h1 {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  color: #fff2d2;
+  color: var(--cream);
   text-align: center;
   padding: 10px;
   font-size: 14px;
 }
 
-#cameraPlaceholder .cameraIcon {
+.cameraIcon {
   font-size: 35px;
   margin-bottom: 5px;
 }
@@ -202,28 +205,38 @@ h1 {
   font-size: 12px;
   color: #ffe5a1;
   text-align: center;
+  min-height: 17px;
 }
 
+/* KURSOR TANGAN */
+
 #cursor {
-  position: absolute;
-  width: 19px;
-  height: 19px;
+  position: fixed;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: 3px solid #00ff91;
   background: #00ff9160;
   pointer-events: none;
-  z-index: 1001;
+  z-index: 10000;
   display: none;
   transform: translate(-50%, -50%);
 }
 
-/* Butang */
+#cursor.pinch {
+  border-color: #ffdf39;
+  background: #ffdf3980;
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+/* BUTANG */
+
 .controls {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 9px;
-  margin: 12px 0;
+  margin: 14px 0;
 }
 
 .primary {
@@ -232,7 +245,7 @@ h1 {
 }
 
 .secondary {
-  background: #ffffff;
+  background: white;
   color: #173d30;
 }
 
@@ -248,13 +261,14 @@ h1 {
   margin: 3px 0;
 }
 
-/* Paparan kemenangan */
+/* KEMENANGAN */
+
 #winScreen {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.92);
-  z-index: 2000;
+  background: rgba(0,0,0,0.93);
+  z-index: 20000;
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -283,18 +297,9 @@ h1 {
   font-size: 16px;
 }
 
-.hidden {
-  display: none !important;
-}
-
-/* Telefon */
 @media (max-width: 600px) {
   #game {
     padding: 12px 8px 18px;
-  }
-
-  header {
-    margin-bottom: 5px;
   }
 
   #gameArea {
@@ -302,7 +307,7 @@ h1 {
   }
 
   #cameraFrame {
-    width: clamp(240px, 72vw, 320px);
+    width: clamp(240px, 72vw, 340px);
   }
 
   .controls button {
@@ -315,7 +320,6 @@ h1 {
   }
 }
 
-/* Telefon sangat kecil */
 @media (max-width: 360px) {
   #cameraFrame {
     width: 240px;
@@ -355,23 +359,27 @@ h1 {
     <div id="letterBank"></div>
 
     <div id="cameraSection">
+
       <div id="cameraFrame">
+
         <video id="cameraVideo" autoplay playsinline muted></video>
 
         <div id="cameraPlaceholder">
           <div class="cameraIcon">📷</div>
           <div>Kamera akan dipaparkan di sini</div>
         </div>
+
       </div>
 
       <div id="cameraStatus">Kamera belum diaktifkan</div>
-      <div id="cursor"></div>
+
     </div>
 
   </div>
 
   <div class="controls">
-    <button class="primary" id="cameraButton" onclick="startCamera()">
+
+    <button class="primary" onclick="startCamera()">
       📷 Aktifkan Kamera
     </button>
 
@@ -382,63 +390,68 @@ h1 {
     <button class="danger" onclick="restartGame()">
       ↻ Mula Semula
     </button>
+
   </div>
 
-  <div id="modeLabel">Pilih cara bermain untuk bermula.</div>
+  <div id="modeLabel">
+    Pilih cara bermain untuk bermula.
+  </div>
 
 </div>
 
-<!-- Paparan kemenangan -->
+<div id="cursor"></div>
+
+<!-- PAPARAN KEMENANGAN -->
+
 <div id="winScreen">
+
   <h2>🎉 TAHNIAH! 🎉</h2>
-  <p id="winMessage">Anda berjaya menyusun huruf dengan betul!</p>
+
+  <p id="winMessage">
+    Anda berjaya menyusun semua huruf dengan betul!
+  </p>
 
   <img
     id="posterImage"
-    src="./poster.png.jfif"
+    src="./poster.png"
     alt="Poster kemenangan"
-    onerror="tryPosterFallback()"
+    onerror="posterError()"
   >
 
   <button class="primary" onclick="closeWinScreen()">
     Main Semula
   </button>
+
 </div>
 
-<!-- MediaPipe -->
+<!-- MEDIAPIPE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
 <script>
-/* =====================================
+/* =================================
    TETAPAN PERMAINAN
-===================================== */
+================================= */
 
-const targetLetters = ['ا','ل','ق','ر','ء','ا','ن'];
-
-const letterNames = [
-  'Alif',
-  'Lam',
-  'Qaf',
-  'Ra',
-  'Hamzah',
-  'Alif',
-  'Nun'
+const targetLetters = [
+  'ا', 'ل', 'ق', 'ر', 'ء', 'ا', 'ن'
 ];
 
 const answerSlots = document.getElementById('answerSlots');
 const letterBank = document.getElementById('letterBank');
-const gameArea = document.getElementById('gameArea');
+
 const video = document.getElementById('cameraVideo');
 const cameraStatus = document.getElementById('cameraStatus');
 const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+
 const cursor = document.getElementById('cursor');
 
 let hands = null;
 let cameraStream = null;
 let cameraActive = false;
-let gameCompleted = false;
+let cameraBusy = false;
 
+let currentMode = 'none';
 let currentDrag = null;
 let dragOrigin = null;
 
@@ -446,13 +459,11 @@ let isPinching = false;
 let pinchFrames = 0;
 let releaseFrames = 0;
 
-let currentMode = 'none';
-let lastHandX = 0;
-let lastHandY = 0;
+let gameCompleted = false;
 
-/* =====================================
-   BINA PAPARAN HURUF
-===================================== */
+/* =================================
+   BINA PERMAINAN
+================================= */
 
 function shuffle(array) {
   const result = [...array];
@@ -466,93 +477,117 @@ function shuffle(array) {
 }
 
 function createGame() {
+
   answerSlots.innerHTML = '';
   letterBank.innerHTML = '';
 
   gameCompleted = false;
 
   targetLetters.forEach((letter, index) => {
+
     const slot = document.createElement('div');
 
     slot.className = 'slot';
     slot.dataset.index = index;
 
     answerSlots.appendChild(slot);
+
   });
 
-  const shuffled = shuffle(targetLetters);
+  shuffle(targetLetters).forEach((letter, index) => {
 
-  shuffled.forEach((letter, index) => {
     const card = document.createElement('div');
 
     card.className = 'letter-card';
     card.textContent = letter;
+
     card.dataset.letter = letter;
     card.dataset.id = index;
 
     letterBank.appendChild(card);
+
   });
+
 }
 
 createGame();
 
-/* =====================================
-   SISTEM DRAG DAN DROP
-===================================== */
+/* =================================
+   SISTEM KEDUDUKAN KURSOR
+================================= */
 
 function getElementAt(x, y) {
+
+  // Kursor dan kad yang sedang diangkat
+  // tidak menghalang pengesanan sasaran.
+
+  cursor.style.pointerEvents = 'none';
+
   return document.elementFromPoint(x, y);
+
 }
 
+/* =================================
+   SISTEM AMBIL HURUF
+================================= */
+
 function startDrag(card, x, y) {
-  if (gameCompleted || currentDrag) return;
+
+  if (!card || currentDrag || gameCompleted) return;
 
   currentDrag = card;
 
+  const originalParent = card.parentElement;
+
   dragOrigin = {
-    parent: card.parentElement,
+    parent: originalParent,
     nextSibling: card.nextSibling
   };
 
-  card.classList.add('dragging');
+  // Jika kad berasal daripada kotak jawapan,
+  // kosongkan kotak tersebut.
 
-  card.style.left = (x - card.offsetWidth / 2) + 'px';
-  card.style.top = (y - card.offsetHeight / 2) + 'px';
-}
-
-function moveDrag(x, y) {
-  if (!currentDrag) return;
-
-  currentDrag.style.left = (x - currentDrag.offsetWidth / 2) + 'px';
-  currentDrag.style.top = (y - currentDrag.offsetHeight / 2) + 'px';
-}
-
-function endDrag(x, y) {
-  if (!currentDrag) return;
-
-  const card = currentDrag;
-  const target = getElementAt(x, y);
-
-  card.classList.remove('dragging');
-  card.style.left = '';
-  card.style.top = '';
-
-  const slot = target ? target.closest('.slot') : null;
-
-  if (slot && !slot.classList.contains('filled')) {
-    slot.appendChild(card);
-    slot.classList.add('filled');
-  } else {
-    restoreCard(card);
+  if (originalParent.classList.contains('slot')) {
+    originalParent.classList.remove('filled');
   }
 
-  currentDrag = null;
-  dragOrigin = null;
+  // Pindahkan kad ke body supaya tidak terpotong
+  // oleh kawasan permainan.
 
-  checkAnswer();
+  document.body.appendChild(card);
+
+  card.classList.add('dragging');
+
+  card.style.position = 'fixed';
+  card.style.zIndex = '9999';
+  card.style.pointerEvents = 'none';
+
+  moveDrag(x, y);
+
 }
 
+/* =================================
+   GERAKKAN HURUF
+================================= */
+
+function moveDrag(x, y) {
+
+  if (!currentDrag) return;
+
+  currentDrag.style.left =
+    (x - currentDrag.offsetWidth / 2) + 'px';
+
+  currentDrag.style.top =
+    (y - currentDrag.offsetHeight / 2) + 'px';
+
+}
+
+/* =================================
+   KEMBALIKAN HURUF
+================================= */
+
 function restoreCard(card) {
+
   if (!dragOrigin) {
     letterBank.appendChild(card);
     return;
@@ -560,26 +595,117 @@ function restoreCard(card) {
 
   const parent = dragOrigin.parent;
 
-  if (parent) {
-    if (
-      dragOrigin.nextSibling &&
-      dragOrigin.nextSibling.parentElement === parent
-    ) {
-      parent.insertBefore(card, dragOrigin.nextSibling);
-    } else {
-      parent.appendChild(card);
-    }
-  } else {
+  if (!parent) {
     letterBank.appendChild(card);
+    return;
   }
 
-  if (parent && parent.classList.contains('slot')) {
+  if (
+    dragOrigin.nextSibling &&
+    dragOrigin.nextSibling.parentElement === parent
+  ) {
+    parent.insertBefore(card, dragOrigin.nextSibling);
+  } else {
+    parent.appendChild(card);
+  }
+
+  if (parent.classList.contains('slot')) {
     parent.classList.add('filled');
   }
+
 }
 
-/* Pointer untuk tetikus dan skrin sentuh */
+/* =================================
+   LEPASKAN HURUF
+================================= */
+
+function endDrag(x, y) {
+
+  if (!currentDrag) return;
+
+  const card = currentDrag;
+
+  const target = getElementAt(x, y);
+
+  const slot = target
+    ? target.closest('.slot')
+    : null;
+
+  card.classList.remove('dragging');
+
+  card.style.position = '';
+  card.style.left = '';
+  card.style.top = '';
+  card.style.zIndex = '';
+  card.style.pointerEvents = '';
+
+  if (
+    slot &&
+    !slot.classList.contains('filled')
+  ) {
+
+    slot.appendChild(card);
+    slot.classList.add('filled');
+
+  } else {
+
+    restoreCard(card);
+
+  }
+
+  currentDrag = null;
+  dragOrigin = null;
+
+  checkAnswer();
+
+}
+
+/* =================================
+   PENGESANAN JAWAPAN
+================================= */
+
+function checkAnswer() {
+
+  if (gameCompleted) return;
+
+  const slots = [...document.querySelectorAll('.slot')];
+
+  if (
+    slots.some(slot => !slot.querySelector('.letter-card'))
+  ) {
+    return;
+  }
+
+  const answer = slots.map(slot => {
+
+    return slot.querySelector('.letter-card').dataset.letter;
+
+  });
+
+  const correct = answer.every((letter, index) => {
+
+    return letter === targetLetters[index];
+
+  });
+
+  if (correct) {
+
+    gameCompleted = true;
+
+    setTimeout(showVictory, 500);
+
+  }
+
+}
+
+/* =================================
+   MOD SKRIN SENTUH
+================================= */
+
+let touchCard = null;
+
 gameArea.addEventListener('pointerdown', function(event) {
+
   if (currentMode !== 'touch') return;
 
   const card = event.target.closest('.letter-card');
@@ -588,333 +714,341 @@ gameArea.addEventListener('pointerdown', function(event) {
 
   event.preventDefault();
 
+  touchCard = card;
+
   startDrag(card, event.clientX, event.clientY);
+
 });
 
 window.addEventListener('pointermove', function(event) {
+
   if (currentMode !== 'touch' || !currentDrag) return;
 
   moveDrag(event.clientX, event.clientY);
+
 });
 
 window.addEventListener('pointerup', function(event) {
+
   if (currentMode !== 'touch' || !currentDrag) return;
 
   endDrag(event.clientX, event.clientY);
+
+  touchCard = null;
+
 });
 
-/* =====================================
-   SEMAK JAWAPAN
-===================================== */
-
-function checkAnswer() {
-  if (gameCompleted) return;
-
-  const slots = [...document.querySelectorAll('.slot')];
-
-  if (slots.some(slot => !slot.querySelector('.letter-card'))) {
-    return;
-  }
-
-  const answer = slots.map(slot => {
-    return slot.querySelector('.letter-card').dataset.letter;
-  });
-
-  const correct = answer.every((letter, index) => {
-    return letter === targetLetters[index];
-  });
-
-  if (correct) {
-    gameCompleted = true;
-
-    setTimeout(() => {
-      showVictory();
-    }, 500);
-  }
-}
-
-/* =====================================
-   PAPARAN KEMENANGAN
-===================================== */
-
-function showVictory() {
-  document.getElementById('winScreen').style.display = 'flex';
-  document.getElementById('winMessage').textContent =
-    'Alhamdulillah! Anda berjaya menyusun semua huruf dengan betul.';
-
-  playSuccessSound();
-}
-
-function closeWinScreen() {
-  document.getElementById('winScreen').style.display = 'none';
-  restartGame();
-}
-
-function tryPosterFallback() {
-  const image = document.getElementById('posterImage');
-
-  if (image.dataset.fallback !== 'done') {
-    image.dataset.fallback = 'done';
-    image.src = './poster.png';
-  } else {
-    image.style.display = 'none';
-    document.getElementById('winMessage').textContent =
-      'Tahniah! Pastikan fail poster.png.jfif atau poster.png dimasukkan ke dalam folder GitHub yang sama.';
-  }
-}
-
-function playSuccessSound() {
-  try {
-    const audio = new AudioContext();
-    const notes = [523, 659, 784, 1046];
-
-    notes.forEach((frequency, index) => {
-      const oscillator = audio.createOscillator();
-      const gain = audio.createGain();
-
-      oscillator.frequency.value = frequency;
-      oscillator.connect(gain);
-      gain.connect(audio.destination);
-
-      const start = audio.currentTime + index * 0.17;
-
-      gain.gain.setValueAtTime(0.15, start);
-      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.3);
-
-      oscillator.start(start);
-      oscillator.stop(start + 0.3);
-    });
-  } catch (error) {
-    console.log('Audio tidak tersedia');
-  }
-}
-
-/* =====================================
-   MOD SKRIN SENTUH
-===================================== */
+/* =================================
+   MOD KAMERA
+================================= */
 
 function startTouchMode() {
+
   stopCamera();
 
   currentMode = 'touch';
 
-  cameraStatus.textContent = 'Mod skrin sentuh sedang digunakan.';
   cameraPlaceholder.style.display = 'flex';
+
+  cameraStatus.textContent =
+    'Mod skrin sentuh sedang digunakan.';
+
+  cursor.style.display = 'none';
 
   document.getElementById('modeLabel').textContent =
     'Sentuh dan tarik huruf ke kotak jawapan.';
 
-  cursor.style.display = 'none';
 }
 
-/* =====================================
-   AKTIFKAN KAMERA
-===================================== */
-
 async function startCamera() {
+
   stopCamera();
 
   currentMode = 'camera';
 
   document.getElementById('modeLabel').textContent =
-    'Cubit ibu jari dan jari telunjuk untuk memilih huruf.';
+    'Cubit ibu jari dan telunjuk untuk mengambil huruf.';
 
-  cameraStatus.textContent = 'Sedang mengaktifkan kamera...';
+  cameraStatus.textContent =
+    'Sedang mengaktifkan kamera...';
 
   try {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      throw new Error('Kamera memerlukan sambungan HTTPS.');
+
+    if (
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia
+    ) {
+      throw new Error('Kamera memerlukan HTTPS.');
     }
 
     cameraStream = await navigator.mediaDevices.getUserMedia({
+
       video: {
         facingMode: 'user',
         width: { ideal: 640 },
         height: { ideal: 480 }
       },
+
       audio: false
+
     });
 
     video.srcObject = cameraStream;
+
     await video.play();
 
     cameraPlaceholder.style.display = 'none';
+
     cameraActive = true;
 
     hands = new Hands({
+
       locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+
+        return 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/' + file;
+
       }
+
     });
 
     hands.setOptions({
+
       maxNumHands: 1,
       modelComplexity: 1,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5
+
     });
 
     hands.onResults(onHandResults);
 
     cameraStatus.textContent =
-      'Kamera aktif. Tunjukkan tangan di hadapan kamera.';
+      'Kamera aktif. Tunjukkan tangan anda.';
 
     processCamera();
 
   } catch (error) {
+
     console.error(error);
 
     cameraStatus.textContent =
-      'Tidak dapat mengaktifkan kamera. Benarkan akses kamera pada pelayar.';
+      'Kamera gagal diaktifkan. Semak kebenaran kamera dan sambungan internet.';
 
     cameraPlaceholder.style.display = 'flex';
+
   }
+
 }
 
-async function processCamera() {
-  if (!cameraActive || !hands) return;
+/* =================================
+   PROSES VIDEO KAMERA
+================================= */
 
-  if (video.readyState >= 2) {
-    try {
+async function processCamera() {
+
+  if (!cameraActive || !hands || cameraBusy) return;
+
+  cameraBusy = true;
+
+  try {
+
+    if (video.readyState >= 2) {
       await hands.send({ image: video });
-    } catch (error) {
-      console.log(error);
     }
+
+  } catch (error) {
+
+    console.error('Ralat pengesanan tangan:', error);
+
   }
+
+  cameraBusy = false;
 
   if (cameraActive) {
     requestAnimationFrame(processCamera);
   }
+
 }
 
-/* =====================================
-   PENGESANAN TANGAN MEDIAPIPE
-===================================== */
+/* =================================
+   MATEMATIK JARAK JARI
+================================= */
 
 function distance(a, b) {
+
   const dx = a.x - b.x;
   const dy = a.y - b.y;
 
   return Math.sqrt(dx * dx + dy * dy);
+
 }
 
+/* =================================
+   MEDIAPIPE HAND RESULTS
+================================= */
+
 function onHandResults(results) {
+
   if (currentMode !== 'camera') return;
 
   if (
     !results.multiHandLandmarks ||
     results.multiHandLandmarks.length === 0
   ) {
+
     cursor.style.display = 'none';
 
     pinchFrames = 0;
     releaseFrames = 0;
 
     if (currentDrag) {
-      restoreCard(currentDrag);
-      currentDrag.classList.remove('dragging');
-      currentDrag.style.left = '';
-      currentDrag.style.top = '';
+
+      const card = currentDrag;
+
+      card.classList.remove('dragging');
+
+      card.style.position = '';
+      card.style.left = '';
+      card.style.top = '';
+      card.style.zIndex = '';
+      card.style.pointerEvents = '';
+
+      restoreCard(card);
+
       currentDrag = null;
       dragOrigin = null;
+
     }
 
     isPinching = false;
-    cameraStatus.textContent = 'Tangan tidak dikesan. Tunjukkan tangan.';
+
+    cameraStatus.textContent =
+      'Tangan tidak dikesan. Tunjukkan tangan di hadapan kamera.';
+
     return;
+
   }
 
   const landmarks = results.multiHandLandmarks[0];
 
-  // Hujung jari telunjuk dan ibu jari
+  // Ibu jari
   const thumb = landmarks[4];
+
+  // Telunjuk
   const indexFinger = landmarks[8];
 
-  // Jarak antara ibu jari dan telunjuk
+  // Kira jarak cubitan
   const pinchDistance = distance(thumb, indexFinger);
 
-  // Saiz tapak tangan sebagai rujukan
+  // Saiz tapak tangan
   const palmWidth = distance(landmarks[5], landmarks[17]);
 
-  const pinchRatio = pinchDistance / palmWidth;
+  const pinchRatio = pinchDistance / Math.max(palmWidth, 0.001);
 
-  // Kedudukan kursor berdasarkan hujung jari telunjuk
-  const areaRect = gameArea.getBoundingClientRect();
+  // Koordinat tangan diterjemahkan kepada skrin.
+  // X diterbalikkan kerana paparan kamera dicerminkan.
 
-  const x = areaRect.left + (1 - indexFinger.x) * areaRect.width;
-  const y = areaRect.top + indexFinger.y * areaRect.height;
-
-  lastHandX = x;
-  lastHandY = y;
+  const x = (1 - indexFinger.x) * window.innerWidth;
+  const y = indexFinger.y * window.innerHeight;
 
   cursor.style.display = 'block';
-
-  // Kursor dipaparkan di dalam kawasan permainan
-  const gameRect = document.getElementById('game').getBoundingClientRect();
-
-  cursor.style.position = 'fixed';
   cursor.style.left = x + 'px';
   cursor.style.top = y + 'px';
 
-  if (pinchRatio < (isPinching ? 0.48 : 0.35)) {
+  // Pengesanan cubitan dengan toleransi
+  // supaya cubitan lebih mudah dikesan.
+
+  if (pinchRatio < (isPinching ? 0.52 : 0.42)) {
+
     pinchFrames++;
     releaseFrames = 0;
+
   } else {
+
     releaseFrames++;
     pinchFrames = 0;
+
   }
 
-  // Mula mencubit
+  // MULA CUBIT
   if (!isPinching && pinchFrames >= 2) {
+
     isPinching = true;
 
-    cursor.style.borderColor = '#ffdf39';
-    cursor.style.background = '#ffdf3970';
+    cursor.classList.add('pinch');
+
+    // Cari huruf yang betul-betul berada
+    // di bawah hujung jari telunjuk.
 
     const element = getElementAt(x, y);
-    const card = element ? element.closest('.letter-card') : null;
+
+    const card = element
+      ? element.closest('.letter-card')
+      : null;
 
     if (card && !gameCompleted) {
+
       startDrag(card, x, y);
+
     }
+
   }
 
-  // Semasa mencubit, gerakkan huruf
+  // GERAKKAN HURUF SELAGI CUBITAN DIKEKALKAN
   if (isPinching && currentDrag) {
+
     moveDrag(x, y);
+
   }
 
-  // Lepaskan cubitan
+  // LEPASKAN CUBITAN
   if (isPinching && releaseFrames >= 3) {
+
     isPinching = false;
 
-    cursor.style.borderColor = '#00ff91';
-    cursor.style.background = '#00ff9160';
+    cursor.classList.remove('pinch');
 
     if (currentDrag) {
+
       endDrag(x, y);
+
     }
+
   }
 
-  if (isPinching) {
-    cameraStatus.textContent = currentDrag
-      ? 'Huruf sedang dipegang. Gerakkan ke kotak jawapan.'
-      : 'Cubitan dikesan. Pilih satu huruf.';
+  if (currentDrag) {
+
+    cameraStatus.textContent =
+      'Huruf berjaya diangkat! Gerakkan ke kotak jawapan.';
+
+  } else if (isPinching) {
+
+    cameraStatus.textContent =
+      'Cubitan dikesan. Cuba cubit tepat pada huruf.';
+
   } else {
-    cameraStatus.textContent = 'Kamera aktif. Cubit untuk memilih huruf.';
+
+    cameraStatus.textContent =
+      'Kamera aktif. Cubit huruf untuk mengangkatnya.';
+
   }
+
 }
 
-/* =====================================
+/* =================================
    HENTIKAN KAMERA
-===================================== */
+================================= */
 
 function stopCamera() {
+
   cameraActive = false;
 
   if (cameraStream) {
+
     cameraStream.getTracks().forEach(track => track.stop());
+
     cameraStream = null;
+
   }
 
   if (video.srcObject) {
@@ -922,6 +1056,7 @@ function stopCamera() {
   }
 
   if (hands) {
+
     try {
       hands.close();
     } catch (error) {
@@ -929,38 +1064,129 @@ function stopCamera() {
     }
 
     hands = null;
+
   }
+
+  cameraBusy = false;
 
   cameraPlaceholder.style.display = 'flex';
 
   if (currentDrag) {
-    currentDrag.classList.remove('dragging');
-    currentDrag.style.left = '';
-    currentDrag.style.top = '';
 
-    restoreCard(currentDrag);
+    const card = currentDrag;
+
+    card.classList.remove('dragging');
+
+    card.style.position = '';
+    card.style.left = '';
+    card.style.top = '';
+    card.style.zIndex = '';
+    card.style.pointerEvents = '';
+
+    restoreCard(card);
 
     currentDrag = null;
     dragOrigin = null;
+
   }
 
   isPinching = false;
   pinchFrames = 0;
   releaseFrames = 0;
+
+  cursor.style.display = 'none';
+  cursor.classList.remove('pinch');
+
 }
 
-/* =====================================
+/* =================================
+   PAPARAN KEMENANGAN
+================================= */
+
+function showVictory() {
+
+  document.getElementById('winScreen').style.display = 'flex';
+
+  document.getElementById('winMessage').textContent =
+    'Alhamdulillah! Anda berjaya menyusun semua huruf dengan betul.';
+
+  playSuccessSound();
+
+}
+
+function posterError() {
+
+  document.getElementById('posterImage').style.display = 'none';
+
+  document.getElementById('winMessage').textContent =
+    'Tahniah! Sila pastikan fail poster.png berada dalam folder yang sama dengan index.html.';
+
+}
+
+function closeWinScreen() {
+
+  document.getElementById('winScreen').style.display = 'none';
+
+  restartGame();
+
+}
+
+/* =================================
+   BUNYI KEJAYAAN
+================================= */
+
+function playSuccessSound() {
+
+  try {
+
+    const audio = new AudioContext();
+
+    const notes = [523, 659, 784, 1046];
+
+    notes.forEach((frequency, index) => {
+
+      const oscillator = audio.createOscillator();
+
+      const gain = audio.createGain();
+
+      oscillator.frequency.value = frequency;
+
+      oscillator.connect(gain);
+      gain.connect(audio.destination);
+
+      const start = audio.currentTime + index * 0.17;
+
+      gain.gain.setValueAtTime(0.15, start);
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        start + 0.3
+      );
+
+      oscillator.start(start);
+      oscillator.stop(start + 0.3);
+
+    });
+
+  } catch (error) {
+
+    console.log('Audio tidak tersedia.');
+
+  }
+
+}
+
+/* =================================
    MULA SEMULA
-===================================== */
+================================= */
 
 function restartGame() {
+
   document.getElementById('winScreen').style.display = 'none';
 
   stopCamera();
 
   currentMode = 'none';
-
-  cursor.style.display = 'none';
 
   createGame();
 
@@ -968,6 +1194,7 @@ function restartGame() {
 
   document.getElementById('modeLabel').textContent =
     'Pilih cara bermain untuk bermula.';
+
 }
 
 </script>
