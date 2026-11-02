@@ -1,0 +1,1189 @@
+
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misi Susun Huruf Hijaiyah | MyTask 2026</title>
+
+<!-- MEDIAPIPE HAND TRACKING -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+<!-- FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    background:
+      linear-gradient(rgba(4,35,21,.78),rgba(30,12,19,.83)),
+      url('https://images.unsplash.com/photo-1519817650390-64a93db51149?q=80&w=2000')
+      center/cover fixed;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+}
+
+.screen {
+    display: none;
+    min-height: 100vh;
+    padding: 25px;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.screen.active {
+    display: flex;
+}
+
+h1 {
+    color: #ffdc82;
+    text-shadow: 0 3px 12px #000;
+    font-size: clamp(28px,5vw,50px);
+    margin: 10px;
+}
+
+.subtitle {
+    color: #fff0cc;
+    font-size: 18px;
+}
+
+.main-btn {
+    background: linear-gradient(135deg,#ffe28a,#bd8528);
+    color: #47270a;
+    font-weight: 800;
+    font-size: 17px;
+    padding: 15px 30px;
+    border-radius: 50px;
+    margin: 8px;
+    box-shadow: 0 5px 15px #0006;
+}
+
+.main-btn:hover {
+    transform: scale(1.04);
+}
+
+.secondary-btn {
+    background: #fff;
+    color: #16482a;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-weight: 700;
+    margin: 7px;
+}
+
+.instruction {
+    background: #fff1d2;
+    color: #543514;
+    padding: 12px 20px;
+    border-radius: 15px;
+    font-weight: 700;
+    margin: 12px;
+    max-width: 850px;
+}
+
+#game {
+    justify-content: flex-start;
+    padding-top: 20px;
+}
+
+#slots {
+    display: flex;
+    flex-direction: row;
+    direction: rtl;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    max-width: 850px;
+    margin: 20px auto;
+}
+
+.slot {
+    width: clamp(65px,10vw,100px);
+    height: clamp(85px,12vw,115px);
+    background: #fff8e9;
+    border: 3px dashed #d5a34a;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #17542d;
+    position: relative;
+}
+
+.slot:not(.filled)::after {
+    content: "?";
+    font-size: 30px;
+    color: #c9b68c;
+    position: absolute;
+}
+
+.slot.filled {
+    border: 3px solid #e8c05e;
+    background: #fff8e9;
+}
+
+#letters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 900px;
+    min-height: 130px;
+    padding: 18px;
+    border: 2px solid #e6c36e;
+    border-radius: 20px;
+    background: #ffffff22;
+}
+
+.letter-card {
+    width: clamp(65px,9vw,90px);
+    height: clamp(80px,11vw,100px);
+    background: linear-gradient(145deg,#fff9e8,#eacb83);
+    border: 3px solid #d6a23a;
+    border-radius: 15px;
+    color: #17542d;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 12px #0005;
+    user-select: none;
+    touch-action: none;
+}
+
+.letter-card.dragging {
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    transform: scale(1.1);
+}
+
+.arabic {
+    font-family: 'Amiri',serif;
+    font-size: 48px;
+    line-height: 1.1;
+    font-weight: bold;
+}
+
+.letter-name {
+    font-size: 11px;
+    font-weight: 800;
+}
+
+#status {
+    min-height: 30px;
+    color: #ffe7a3;
+    font-weight: 700;
+    margin: 12px;
+}
+
+#cameraBox {
+    display: none;
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    width: 180px;
+    height: 130px;
+    background: #111;
+    border: 3px solid #f3cf72;
+    border-radius: 15px;
+    overflow: hidden;
+    z-index: 100;
+}
+
+#cameraBox video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+.camera-label {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #000a;
+    font-size: 10px;
+    padding: 4px;
+}
+
+#cursor {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    width: 30px;
+    height: 30px;
+    border: 4px solid #ffdf62;
+    background: #ffdf6244;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%,-50%);
+    box-shadow: 0 0 15px #ffdf62;
+}
+
+#cursor.pinch {
+    background: #43ff7c99;
+    border-color: #43ff7c;
+    transform: translate(-50%,-50%) scale(.7);
+}
+
+#posterScreen {
+    background: rgba(8,34,20,.97);
+    padding: 15px;
+}
+
+#posterScreen img {
+    max-width: 95vw;
+    max-height: 72vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border: 5px solid #e6c36a;
+    border-radius: 12px;
+    box-shadow: 0 0 35px #e6c36a99;
+    animation: zoom .8s ease;
+}
+
+@keyframes zoom {
+    from {
+        transform: scale(.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#posterScreen h2 {
+    color: #ffdf85;
+}
+
+#confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3000;
+}
+
+@media(max-width:600px) {
+    #cameraBox {
+        width: 110px;
+        height: 85px;
+        top: 5px;
+        right: 5px;
+    }
+
+    #game {
+        padding-top: 100px;
+    }
+
+    .screen {
+        padding: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="cursor"></div>
+<canvas id="confetti"></canvas>
+
+<!-- MENU UTAMA -->
+<section id="menu" class="screen active">
+
+    <div style="font-size:75px">🕌</div>
+
+    <h1>MISI SUSUN HURUF HIJAIYAH</h1>
+
+    <p class="subtitle">
+        KARNIVAL KHATAM AL-QURAN TAHUN 6
+    </p>
+
+    <p class="subtitle">MyTask 2026</p>
+
+    <div class="instruction">
+        Gunakan tangan anda untuk mengambil huruf Hijaiyah
+        dan susun menjadi perkataan AL-QURAN!
+    </div>
+
+    <button class="main-btn" onclick="startGame()">
+        🎮 MULA PERMAINAN
+    </button>
+
+    <button class="secondary-btn" onclick="showInstructions()">
+        📖 CARA BERMAIN
+    </button>
+
+    <div id="instructions"
+         style="display:none;background:#fff1d2;color:#442b16;padding:20px;border-radius:15px;max-width:550px">
+
+        <b>CARA BERMAIN</b><br><br>
+
+        1. Benarkan akses kamera.<br>
+        2. Halakan tangan ke arah kad huruf.<br>
+        3. Cubit ibu jari dan telunjuk untuk mengambil huruf.<br>
+        4. Gerakkan tangan ke ruang jawapan.<br>
+        5. Lepaskan cubitan untuk meletakkan huruf.<br>
+        6. Susun semua tujuh huruf.<br>
+        7. Tekan SEMAK JAWAPAN.
+    </div>
+</section>
+
+
+<!-- PAPARAN PERMAINAN -->
+<section id="game" class="screen">
+
+    <h1 style="font-size:clamp(24px,4vw,38px)">
+        🕌 SUSUN HURUF HIJAIYAH
+    </h1>
+
+    <div class="instruction">
+        Cubit huruf dan susun mengikut urutan yang betul dari kanan ke kiri.
+    </div>
+
+    <h3 style="color:#ffdf85">RUANG JAWAPAN</h3>
+
+    <div id="slots"></div>
+
+    <h3 style="color:#ffdf85">PILIH HURUF DI BAWAH</h3>
+
+    <div id="letters"></div>
+
+    <div id="status">
+        Sila aktifkan kamera untuk bermain.
+    </div>
+
+    <button class="main-btn" onclick="checkAnswer()">
+        ✓ SEMAK JAWAPAN
+    </button>
+
+    <button class="secondary-btn" onclick="resetGame()">
+        ↻ MAIN SEMULA
+    </button>
+
+    <button class="secondary-btn" onclick="goMenu()">
+        MENU UTAMA
+    </button>
+</section>
+
+
+<!-- KAMERA -->
+<div id="cameraBox">
+    <video id="video" autoplay playsinline muted></video>
+    <div class="camera-label">AI HAND TRACKING</div>
+</div>
+
+
+<!-- PAPARAN POSTER KEMENANGAN -->
+<section id="posterScreen" class="screen">
+
+    <h2>🎉 TAHNIAH! ANDA BERJAYA! 🎉</h2>
+
+    <img
+        src="./poster.png"
+        alt="Poster rasmi Karnival Khatam Al-Quran"
+        onerror="this.alt='Poster tidak dijumpai. Sila upload poster.png ke GitHub.'"
+    >
+
+    <h2>ANDA BERJAYA MENYELESAIKAN MISI!</h2>
+
+    <button class="main-btn" onclick="resetGame()">
+        ↻ MAIN SEMULA
+    </button>
+
+    <button class="secondary-btn" onclick="goMenu()">
+        MENU UTAMA
+    </button>
+</section>
+
+
+<script>
+
+// =====================================
+// 1. DATA HURUF HIJAIYAH
+// =====================================
+
+// Urutan dari kanan ke kiri
+const target = ['ا','ل','ق','ر','ء','ا','ن'];
+
+const names = [
+    'Alif',
+    'Lam',
+    'Qaf',
+    'Ra',
+    'Hamzah',
+    'Alif',
+    'Nun'
+];
+
+let slots = [];
+
+let hands = null;
+let stream = null;
+let cameraReady = false;
+let animationId = null;
+
+let currentDrag = null;
+let isPinching = false;
+
+let pinchFrames = 0;
+let releaseFrames = 0;
+
+let lastX = 0;
+let lastY = 0;
+
+const video = document.getElementById('video');
+const cursor = document.getElementById('cursor');
+
+
+// =====================================
+// 2. PAPARAN
+// =====================================
+
+function showScreen(id) {
+
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+
+    document.getElementById(id).classList.add('active');
+}
+
+function showInstructions() {
+
+    const box = document.getElementById('instructions');
+
+    box.style.display =
+        box.style.display === 'none' ? 'block' : 'none';
+}
+
+function goMenu() {
+
+    stopCamera();
+
+    showScreen('menu');
+}
+
+
+// =====================================
+// 3. RAWAKKAN HURUF
+// =====================================
+
+function shuffle(array) {
+
+    const result = [...array];
+
+    for(let i = result.length - 1; i > 0; i--) {
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [result[i],result[j]] = [result[j],result[i]];
+    }
+
+    return result;
+}
+
+
+// =====================================
+// 4. BINA KAD HURUF
+// =====================================
+
+function makeCard(letter,index) {
+
+    const card = document.createElement('div');
+
+    card.className = 'letter-card';
+
+    card.dataset.letter = letter;
+    card.dataset.id = index;
+
+    card.innerHTML = `
+        <div class="arabic">${letter}</div>
+        <div class="letter-name">${names[index]}</div>
+    `;
+
+    return card;
+}
+
+
+// =====================================
+// 5. MULAKAN PERMAINAN
+// =====================================
+
+async function startGame() {
+
+    showScreen('game');
+
+    document.getElementById('cameraBox').style.display = 'block';
+
+    resetBoard();
+
+    await startCamera();
+}
+
+
+// =====================================
+// 6. BINA PAPAN JAWAPAN
+// =====================================
+
+function resetBoard() {
+
+    slots = Array(7).fill(null);
+
+    currentDrag = null;
+    isPinching = false;
+    pinchFrames = 0;
+    releaseFrames = 0;
+
+    const slotArea = document.getElementById('slots');
+    const letterArea = document.getElementById('letters');
+
+    slotArea.innerHTML = '';
+    letterArea.innerHTML = '';
+
+    // Tujuh ruang jawapan RTL
+    for(let i = 0; i < 7; i++) {
+
+        const slot = document.createElement('div');
+
+        slot.className = 'slot';
+        slot.dataset.index = i;
+
+        slotArea.appendChild(slot);
+    }
+
+    // Huruf disusun secara rawak
+    const randomLetters = shuffle(
+        target.map((letter,index) => ({
+            letter,
+            index
+        }))
+    );
+
+    randomLetters.forEach(item => {
+
+        letterArea.appendChild(
+            makeCard(item.letter,item.index)
+        );
+
+    });
+
+    document.getElementById('status').textContent =
+        'Cubit huruf untuk mengambilnya menggunakan tangan anda!';
+}
+
+
+// =====================================
+// 7. RESET PERMAINAN
+// =====================================
+
+function resetGame() {
+
+    showScreen('game');
+
+    document.getElementById('cameraBox').style.display = 'block';
+
+    resetBoard();
+
+    if(!cameraReady) {
+        startCamera();
+    }
+}
+
+
+// =====================================
+// 8. AMBIL HURUF
+// =====================================
+
+function startDrag(element,x,y) {
+
+    if(currentDrag) return;
+
+    const rect = element.getBoundingClientRect();
+
+    const parent = element.parentElement;
+
+    const oldSlot =
+        parent.classList.contains('slot') ? parent : null;
+
+    if(oldSlot) {
+
+        slots[Number(oldSlot.dataset.index)] = null;
+
+        oldSlot.classList.remove('filled');
+    }
+
+    currentDrag = {
+        element,
+        parent,
+        oldSlot,
+        offsetX: x - rect.left,
+        offsetY: y - rect.top,
+        width: rect.width,
+        height: rect.height
+    };
+
+    element.classList.add('dragging');
+
+    element.style.left = rect.left + 'px';
+    element.style.top = rect.top + 'px';
+    element.style.width = rect.width + 'px';
+    element.style.height = rect.height + 'px';
+
+    document.body.appendChild(element);
+
+    moveDrag(x,y);
+
+    playTone(500,.08);
+}
+
+
+// =====================================
+// 9. GERAKKAN HURUF
+// =====================================
+
+function moveDrag(x,y) {
+
+    if(!currentDrag) return;
+
+    const el = currentDrag.element;
+
+    el.style.left =
+        (x - currentDrag.offsetX) + 'px';
+
+    el.style.top =
+        (y - currentDrag.offsetY) + 'px';
+}
+
+
+// =====================================
+// 10. LEPASKAN HURUF
+// =====================================
+
+function releaseDrag(x,y) {
+
+    if(!currentDrag) return;
+
+    const drag = currentDrag;
+    const el = drag.element;
+
+    el.style.display = 'none';
+
+    const targetElement = document.elementFromPoint(x,y);
+
+    el.style.display = '';
+
+    const slot = targetElement?.closest('.slot');
+
+    el.classList.remove('dragging');
+
+    el.style.position = '';
+    el.style.left = '';
+    el.style.top = '';
+    el.style.width = '';
+    el.style.height = '';
+
+    if(slot && !slot.classList.contains('filled')) {
+
+        slot.appendChild(el);
+
+        slot.classList.add('filled');
+
+        slots[Number(slot.dataset.index)] =
+            el.dataset.letter;
+
+        playTone(650,.1);
+
+        document.getElementById('status').textContent =
+            'Huruf berjaya diletakkan!';
+
+    } else {
+
+        // Jika ruang sudah penuh atau lokasi salah,
+        // kembalikan kad ke tempat asal.
+
+        if(drag.oldSlot &&
+           !drag.oldSlot.classList.contains('filled')) {
+
+            drag.oldSlot.appendChild(el);
+
+            drag.oldSlot.classList.add('filled');
+
+            slots[Number(drag.oldSlot.dataset.index)] =
+                el.dataset.letter;
+
+        } else {
+
+            document.getElementById('letters').appendChild(el);
+        }
+    }
+
+    currentDrag = null;
+}
+
+
+// =====================================
+// 11. SEMAK JAWAPAN
+// =====================================
+
+function checkAnswer() {
+
+    if(currentDrag) return;
+
+    const complete = slots.every(letter => letter !== null);
+
+    if(!complete) {
+
+        document.getElementById('status').textContent =
+            '⚠️ Lengkapkan semua ruang dahulu!';
+
+        playTone(200,.2);
+
+        return;
+    }
+
+    const correct = slots.every((letter,index) => {
+        return letter === target[index];
+    });
+
+    if(correct) {
+
+        document.getElementById('status').textContent =
+            '🎉 TAHNIAH! JAWAPAN ANDA BETUL!';
+
+        playTone(700,.2);
+
+        setTimeout(() => playTone(900,.3),250);
+
+        launchConfetti();
+
+        setTimeout(() => {
+            stopCamera();
+            showScreen('posterScreen');
+        },1800);
+
+    } else {
+
+        document.getElementById('status').textContent =
+            '❌ Belum tepat! Cuba susun semula huruf.';
+
+        playTone(180,.3);
+    }
+}
+
+
+// =====================================
+// 12. AUDIO
+// =====================================
+
+function playTone(frequency,duration) {
+
+    try {
+
+        const ctx = new (
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
+
+        const oscillator = ctx.createOscillator();
+
+        const gain = ctx.createGain();
+
+        oscillator.frequency.value = frequency;
+
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+
+        gain.gain.setValueAtTime(.15,ctx.currentTime);
+
+        gain.gain.exponentialRampToValueAtTime(
+            .001,
+            ctx.currentTime + duration
+        );
+
+        oscillator.start();
+
+        oscillator.stop(ctx.currentTime + duration);
+
+    } catch(error) {
+
+        console.log(error);
+    }
+}
+
+
+// =====================================
+// 13. ANIMASI CONFETTI
+// =====================================
+
+function launchConfetti() {
+
+    const canvas = document.getElementById('confetti');
+
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = Array.from({length:160},() => ({
+
+        x: Math.random() * canvas.width,
+
+        y: -Math.random() * canvas.height,
+
+        size: Math.random() * 9 + 4,
+
+        speed: Math.random() * 5 + 2,
+
+        angle: Math.random() * 6,
+
+        color: [
+            '#ffd700',
+            '#ffffff',
+            '#27ae60',
+            '#e74c3c'
+        ][Math.floor(Math.random()*4)]
+
+    }));
+
+    let frames = 0;
+
+    function draw() {
+
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+
+        pieces.forEach(p => {
+
+            p.y += p.speed;
+
+            p.x += Math.sin(p.angle) * 2;
+
+            p.angle += .04;
+
+            ctx.fillStyle = p.color;
+
+            ctx.fillRect(p.x,p.y,p.size,p.size);
+
+        });
+
+        frames++;
+
+        if(frames < 240) {
+
+            requestAnimationFrame(draw);
+
+        } else {
+
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+        }
+    }
+
+    draw();
+}
+
+
+// =====================================
+// 14. MEDIA PIPE KAMERA
+// =====================================
+
+async function startCamera() {
+
+    if(cameraReady) return;
+
+    const status = document.getElementById('status');
+
+    status.textContent = 'Sedang mengaktifkan kamera...';
+
+    try {
+
+        if(!navigator.mediaDevices?.getUserMedia) {
+
+            throw new Error('Kamera memerlukan HTTPS.');
+        }
+
+        hands = new Hands({
+
+            locateFile: file => {
+
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+
+            }
+
+        });
+
+        hands.setOptions({
+
+            maxNumHands: 1,
+
+            modelComplexity: 1,
+
+            minDetectionConfidence: 0.7,
+
+            minTrackingConfidence: 0.7
+
+        });
+
+        hands.onResults(onHandResults);
+
+        // Minta kebenaran kamera
+
+        stream = await navigator.mediaDevices.getUserMedia({
+
+            video: {
+                facingMode: 'user',
+                width: 640,
+                height: 480
+            },
+
+            audio: false
+
+        });
+
+        video.srcObject = stream;
+
+        await video.play();
+
+        cameraReady = true;
+
+        status.textContent =
+            'Kamera aktif! Cubit huruf untuk mengambilnya.';
+
+        processFrame();
+
+    } catch(error) {
+
+        console.error(error);
+
+        cameraReady = false;
+
+        status.textContent =
+            'Kamera gagal diaktifkan. Benarkan akses kamera dan gunakan HTTPS.';
+    }
+}
+
+
+// =====================================
+// 15. PROSES FRAME KAMERA
+// =====================================
+
+async function processFrame() {
+
+    if(!cameraReady) return;
+
+    try {
+
+        if(video.readyState >= 2) {
+
+            await hands.send({
+                image: video
+            });
+        }
+
+    } catch(error) {
+
+        console.error(error);
+    }
+
+    if(cameraReady) {
+
+        animationId = requestAnimationFrame(processFrame);
+    }
+}
+
+
+// =====================================
+// 16. PENGESANAN TANGAN
+// =====================================
+
+function onHandResults(results) {
+
+    if(!results.multiHandLandmarks ||
+       results.multiHandLandmarks.length === 0) {
+
+        cursor.style.display = 'none';
+
+        if(currentDrag) {
+            // Kekalkan kad sehingga tangan dikesan semula.
+            // Jangan lepaskan kad secara tidak sengaja.
+        }
+
+        return;
+    }
+
+    cursor.style.display = 'block';
+
+    const lm = results.multiHandLandmarks[0];
+
+    // Hujung ibu jari dan telunjuk
+
+    const thumb = lm[4];
+
+    const index = lm[8];
+
+    // Kedudukan cursor pada skrin
+
+    const x = (1-index.x) * window.innerWidth;
+
+    const y = index.y * window.innerHeight;
+
+    // Smoothing
+
+    lastX = lastX * .65 + x * .35;
+
+    lastY = lastY * .65 + y * .35;
+
+    cursor.style.left = lastX + 'px';
+
+    cursor.style.top = lastY + 'px';
+
+    // Jarak antara ibu jari dan telunjuk
+
+    const distance = Math.hypot(
+        thumb.x-index.x,
+        thumb.y-index.y
+    );
+
+    // Cubitan
+
+    const pinch = distance < 0.055;
+
+    if(pinch) {
+
+        pinchFrames++;
+
+        releaseFrames = 0;
+
+        cursor.classList.add('pinch');
+
+        if(pinchFrames >= 2 && !isPinching) {
+
+            isPinching = true;
+
+            if(!currentDrag) {
+
+                const element = document.elementFromPoint(
+                    lastX,lastY
+                );
+
+                const card = element?.closest('.letter-card');
+
+                if(card) {
+
+                    startDrag(card,lastX,lastY);
+                }
+            }
+        }
+
+        if(currentDrag) {
+
+            moveDrag(lastX,lastY);
+        }
+
+    } else {
+
+        releaseFrames++;
+
+        pinchFrames = 0;
+
+        cursor.classList.remove('pinch');
+
+        if(releaseFrames >= 3 && isPinching) {
+
+            isPinching = false;
+
+            if(currentDrag) {
+
+                releaseDrag(lastX,lastY);
+            }
+        }
+    }
+}
+
+
+// =====================================
+// 17. TUTUP KAMERA
+// =====================================
+
+function stopCamera() {
+
+    cameraReady = false;
+
+    if(animationId) {
+
+        cancelAnimationFrame(animationId);
+
+        animationId = null;
+    }
+
+    if(stream) {
+
+        stream.getTracks().forEach(track => {
+            track.stop();
+        });
+
+        stream = null;
+    }
+
+    video.srcObject = null;
+
+    cursor.style.display = 'none';
+
+    document.getElementById('cameraBox').style.display = 'none';
+
+    if(hands) {
+
+        try {
+            hands.close();
+        } catch(error) {}
+
+        hands = null;
+    }
+
+    currentDrag = null;
+
+    isPinching = false;
+
+    pinchFrames = 0;
+
+    releaseFrames = 0;
+}
+
+
+// =====================================
+// 18. SAIZ PAPARAN
+// =====================================
+
+window.addEventListener('resize',() => {
+
+    const canvas = document.getElementById('confetti');
+
+    canvas.width = window.innerWidth;
+
+    canvas.height = window.innerHeight;
+
+});
+
+window.addEventListener('beforeunload',stopCamera);
+
+</script>
+
+</body>
+</html>
