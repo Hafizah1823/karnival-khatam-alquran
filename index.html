@@ -9,676 +9,664 @@
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 
 <style>
-* {
-  box-sizing: border-box;
+* { box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
 }
 
 body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: Arial, sans-serif;
-  color: white;
   background:
-    linear-gradient(rgba(3,20,30,.65), rgba(3,20,30,.72)),
+    linear-gradient(rgba(4,25,35,.45), rgba(4,25,35,.58)),
     url("masjid-negara.png") center center / cover no-repeat fixed;
+}
+
+#app {
+  width: 100%;
+  height: 100dvh;
+  padding: 10px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 8px;
+  color: white;
 }
 
 header {
   text-align: center;
-  padding: 12px 10px 5px;
+  text-shadow: 0 2px 5px #000;
 }
 
 header h1 {
   margin: 0;
-  font-size: clamp(22px, 3vw, 38px);
   color: #ffe58a;
-  text-shadow: 2px 3px 5px #000;
+  font-size: clamp(22px,3vw,36px);
 }
 
 header p {
-  margin: 6px 0;
-  font-size: 15px;
+  margin: 5px 0;
+  font-size: clamp(12px,1.5vw,16px);
 }
 
 .main {
-  width: min(1200px, 96%);
-  margin: 10px auto;
   display: grid;
-  grid-template-columns: 1.2fr .8fr;
-  gap: 15px;
-  align-items: stretch;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 12px;
+  min-height: 0;
 }
 
 .panel {
-  background: rgba(255,255,255,.94);
-  color: #17313d;
+  background: rgba(255,255,255,.95);
+  color: #173344;
+  border: 3px solid #f5d77b;
   border-radius: 18px;
-  padding: 15px;
-  box-shadow: 0 5px 20px #0007;
-  min-width: 0;
+  padding: 12px;
+  min-height: 0;
+  box-shadow: 0 5px 18px rgba(0,0,0,.25);
 }
 
-.panel h2 {
-  text-align: center;
-  margin: 0 0 12px;
-  color: #174d5b;
-  font-size: 21px;
+.game-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
 }
 
-.instructions {
-  background: #fff3c4;
-  border: 2px solid #e8bd43;
-  border-radius: 12px;
-  padding: 9px;
-  text-align: center;
+.section-title {
   font-weight: bold;
-  margin-bottom: 13px;
-  font-size: 14px;
+  font-size: clamp(15px,2vw,21px);
+  text-align: center;
+  color: #123e52;
 }
 
-.slots {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 7px;
+.slots, .letters {
+  display: flex;
   direction: rtl;
-  margin-bottom: 18px;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(5px,1vw,12px);
+  flex-wrap: wrap;
 }
 
 .slot {
-  height: clamp(58px, 8vw, 85px);
-  border: 3px dashed #78949b;
+  width: clamp(45px,7vw,75px);
+  height: clamp(55px,8vw,82px);
+  border: 3px dashed #4b91a8;
   border-radius: 12px;
-  background: #eaf5f5;
+  background: #e8f6fa;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(25px, 4vw, 40px);
-  font-weight: bold;
-  cursor: pointer;
-  position: relative;
+  font-size: clamp(28px,4vw,43px);
+  font-family: "Times New Roman",serif;
+  color: #123e52;
   transition: .15s;
 }
 
 .slot.filled {
-  background: #d4f5d9;
-  border: 3px solid #28a45a;
+  border-style: solid;
+  background: #d8f5d9;
 }
 
-.slot.target,
-.letter.target {
-  outline: 5px solid #ffbd21;
-  transform: scale(1.05);
-}
-
-.slot small {
-  position: absolute;
-  bottom: 2px;
-  font-size: 9px;
-  color: #60777b;
-}
-
-.bank-title {
-  text-align: center;
-  font-weight: bold;
-  margin: 8px 0;
-}
-
-.letters {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 7px;
-  direction: rtl;
+.slot.hover-target {
+  background: #b8f3c5;
+  border: 4px solid #159447;
+  transform: scale(1.08);
 }
 
 .letter {
-  height: clamp(55px, 7vw, 75px);
-  background: #dceeff;
-  border: 2px solid #5795bd;
-  border-radius: 12px;
+  width: clamp(45px,7vw,70px);
+  height: clamp(50px,7vw,70px);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(25px, 4vw, 38px);
+  background: #ffcf56;
+  color: #253746;
+  border: 2px solid #e3a92b;
+  border-radius: 12px;
+  font-size: clamp(28px,4vw,40px);
+  font-family: "Times New Roman",serif;
   font-weight: bold;
   cursor: pointer;
-  transition: .15s;
   user-select: none;
+  transition: .15s;
 }
 
 .letter.selected {
-  background: #ffe58a;
-  border: 3px solid #e2a600;
+  background: #9be7a5;
+  border: 4px solid #168344;
+  transform: scale(1.1);
 }
 
 .letter.used {
-  opacity: .25;
+  opacity: .22;
   pointer-events: none;
+}
+
+.letter.hover-target {
+  outline: 4px solid #168344;
+  transform: scale(1.12);
+}
+
+#status {
+  min-height: 25px;
+  text-align: center;
+  font-weight: bold;
+  color: #145c37;
+  font-size: clamp(13px,1.6vw,17px);
+}
+
+.camera-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.camera-title {
+  text-align: center;
+  font-weight: bold;
+  color: #123e52;
+}
+
+#cameraFrame {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 100px;
+  overflow: hidden;
+  border-radius: 13px;
+  background: #102b38;
+  border: 3px solid #4b91a8;
+}
+
+#cameraPreview, #cameraCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#cameraCanvas {
+  pointer-events: none;
+}
+
+.camera-hint {
+  color: #315365;
+  font-size: 12px;
+  text-align: center;
 }
 
 .controls {
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  justify-content: center;
-  margin-top: 15px;
 }
 
 button {
   border: 0;
   border-radius: 10px;
-  padding: 11px 14px;
-  font-size: 14px;
+  padding: 10px 15px;
   font-weight: bold;
+  font-size: clamp(11px,1.3vw,14px);
   cursor: pointer;
-  color: white;
-  background: #176c7b;
+  color: #173344;
+  background: #ffdb70;
+  box-shadow: 0 3px 6px rgba(0,0,0,.2);
 }
 
-button:hover {
-  filter: brightness(1.12);
-}
+button.primary { background: #54d58b; }
+button.danger { background: #ff9999; }
 
-button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
-
-.camera-box {
-  background: #102d38;
-  border-radius: 14px;
-  padding: 8px;
-  position: relative;
-  overflow: hidden;
-}
-
-#video {
-  width: 100%;
-  display: block;
-  border-radius: 10px;
-  transform: scaleX(-1);
-  background: #071820;
-  min-height: 220px;
-  object-fit: cover;
-}
-
-.camera-status {
-  text-align: center;
-  color: white;
-  padding: 8px 3px;
-  font-size: 13px;
-}
-
-.score {
-  margin-top: 12px;
-  background: #e6f6eb;
-  border-radius: 12px;
-  padding: 12px;
-  text-align: center;
-  font-weight: bold;
-  color: #176c3d;
-}
+/* CURSOR TANGAN */
 
 #handCursor {
   position: fixed;
-  z-index: 9999;
+  z-index: 90;
   pointer-events: none;
-  font-size: 43px;
-  transform: translate(-50%, -50%);
   display: none;
-  filter: drop-shadow(2px 3px 3px #0008);
+  font-size: 42px;
+  line-height: 1;
+  transform: translate(-50%,-65%);
+  filter: drop-shadow(0 3px 3px rgba(0,0,0,.5));
   transition: left .045s linear, top .045s linear;
 }
 
-#message {
-  text-align: center;
-  font-weight: bold;
-  margin-top: 12px;
-  min-height: 24px;
-  color: #176c3d;
+#handCursor.pinching {
+  font-size: 46px;
+  transform: translate(-50%,-65%) scale(1.1);
 }
 
-#successScreen {
+#posterScreen {
   display: none;
   position: fixed;
   inset: 0;
-  z-index: 10000;
-  background: #071820;
+  z-index: 100;
+  background: #071b28;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
 }
 
-#successScreen img {
-  max-width: 100%;
-  max-height: 100%;
+#posterScreen img {
+  max-width: 96vw;
+  max-height: 85dvh;
   object-fit: contain;
 }
 
-#successScreen button {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  z-index: 2;
-  background: #e6a500;
+#posterScreen button {
+  font-size: 16px;
+  padding: 12px 25px;
 }
 
-@media (max-width: 650px) {
-  body {
-    background-attachment: scroll;
-  }
+@media(max-width:650px) {
+  #app { padding: 6px; gap: 5px; }
 
   .main {
     grid-template-columns: 1fr;
+    grid-template-rows: 1fr .85fr;
+    gap: 6px;
   }
 
-  .camera-panel {
-    order: 2;
-  }
+  .panel { padding: 7px; border-width: 2px; }
+  .game-panel { gap: 6px; }
+  #cameraFrame { min-height: 0; }
+  button { padding: 7px 9px; }
+  .controls { gap: 5px; }
+}
 
-  .game-panel {
-    order: 1;
-  }
-
-  #video {
-    min-height: 160px;
-  }
+@media(max-height:650px) {
+  #app { padding: 5px; gap: 5px; }
+  header h1 { font-size: 22px; }
+  header p { font-size: 11px; }
+  .game-panel { gap: 6px; }
+  .slot { height: 48px; }
+  .letter { height: 45px; }
+  button { padding: 7px 9px; }
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>🌙 MISI SUSUN HURUF HIJAIYAH 🌙</h1>
-  <p>Susun huruf untuk membentuk perkataan yang betul!</p>
-</header>
+<div id="app">
 
-<div class="main">
+  <header>
+    <h1>🕌 MISI SUSUN HURUF HIJAIYAH</h1>
+    <p>Gunakan tangan untuk menyusun huruf mengikut urutan yang betul!</p>
+  </header>
 
-  <section class="panel game-panel" id="gamePanel">
-    <h2>🧩 Susun Huruf Mengikut Turutan</h2>
+  <main class="main">
 
-    <div class="instructions">
-      Cubit jari telunjuk dan ibu jari untuk memilih huruf dan meletakkannya di ruang jawapan.
-    </div>
+    <section class="panel game-panel" id="gamePanel">
 
-    <div class="slots" id="slots"></div>
+      <div class="section-title">SUSUN HURUF DI SINI</div>
+      <div class="slots" id="slots"></div>
 
-    <div class="bank-title">PILIH HURUF DI BAWAH</div>
-    <div class="letters" id="letters"></div>
+      <div class="section-title">PILIH HURUF</div>
+      <div class="letters" id="letters"></div>
 
-    <div id="message">Pilih huruf pertama untuk bermula.</div>
+      <div id="status">Mari kita mulakan permainan!</div>
 
-    <div class="score">
-      Huruf betul: <span id="score">0</span> / 7
-    </div>
+    </section>
 
-    <div class="controls">
-      <button onclick="startCamera()">📷 Aktifkan Kamera</button>
-      <button onclick="switchCamera()">🔄 Tukar Kamera</button>
-      <button onclick="stopCamera()">⏹ Hentikan Kamera</button>
-      <button onclick="toggleTouch()">👆 Mod Skrin Sentuh</button>
-      <button onclick="restartGame()">↻ Mula Semula</button>
-    </div>
-  </section>
+    <section class="panel camera-panel">
 
-  <section class="panel camera-panel">
-    <h2>📸 Kamera Pengesan Tangan</h2>
+      <div class="camera-title">📷 KAMERA PEMAIN</div>
 
-    <div class="camera-box">
-      <video id="video" autoplay playsinline muted></video>
-      <div class="camera-status" id="cameraStatus">
-        Kamera belum diaktifkan
+      <div id="cameraFrame">
+        <video id="cameraPreview" autoplay playsinline muted></video>
+        <canvas id="cameraCanvas"></canvas>
       </div>
-    </div>
 
-    <div class="instructions" style="margin-top:12px">
-      🖐️ Buka tangan: Gerakkan kursor<br>
-      🤏 Cubit: Pilih huruf atau ruang jawapan
-    </div>
-  </section>
+      <div class="camera-hint">
+        🖐️ Buka tangan untuk gerakkan cursor.
+        🤏 Cubit untuk memilih.
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="controls">
+    <button class="primary" onclick="startCamera()">▶ Mula Kamera</button>
+    <button onclick="switchCamera()">🔄 Tukar Kamera</button>
+    <button class="danger" onclick="stopCamera()">⏹ Henti Kamera</button>
+    <button onclick="toggleTouch()">☝ Mod Sentuh</button>
+    <button onclick="resetGame()">↻ Mula Semula</button>
+  </footer>
 
 </div>
 
 <div id="handCursor">🖐️</div>
 
-<div id="successScreen">
-  <button onclick="closePoster()">✕ Tutup</button>
+<div id="posterScreen">
   <img src="poster.png" alt="Tahniah!">
+  <button onclick="closePoster()">↻ Main Semula</button>
 </div>
 
 <script>
-const targetWord = ['ا','ل','ق','ر','ء','ا','ن'];
+const sequence = ['ا','ل','ق','ر','ء','ا','ن'];
 
 let selectedLetter = null;
-let score = 0;
-let touchMode = false;
-let cameraActive = false;
-let currentFacingMode = 'user';
-let stream = null;
+let cameraStream = null;
 let hands = null;
-let animationFrame = null;
+let cameraActive = false;
+let touchMode = false;
+let currentFacingMode = 'user';
+let processing = false;
 
 let isPinching = false;
+let lastPinch = false;
+let lastPinchTime = 0;
+
 let smoothX = null;
 let smoothY = null;
+let activeTarget = null;
 
-const video = document.getElementById('video');
+const video = document.getElementById('cameraPreview');
+const canvas = document.getElementById('cameraCanvas');
+const ctx = canvas.getContext('2d');
+const statusElement = document.getElementById('status');
 const cursor = document.getElementById('handCursor');
 const gamePanel = document.getElementById('gamePanel');
 
 function createGame() {
-  const slots = document.getElementById('slots');
-  const letters = document.getElementById('letters');
+  document.getElementById('slots').innerHTML = '';
+  document.getElementById('letters').innerHTML = '';
 
-  slots.innerHTML = '';
-  letters.innerHTML = '';
+  selectedLetter = null;
+  activeTarget = null;
 
-  targetWord.forEach((letter, index) => {
+  sequence.forEach((letter,index) => {
     const slot = document.createElement('div');
     slot.className = 'slot';
     slot.dataset.index = index;
-    slot.innerHTML = '<small>' + (index + 1) + '</small>';
-
     slot.addEventListener('click', () => placeLetter(index));
-
-    slots.appendChild(slot);
+    document.getElementById('slots').appendChild(slot);
   });
 
-  targetWord.forEach((letter, index) => {
+  sequence.forEach((letter,index) => {
     const tile = document.createElement('div');
     tile.className = 'letter';
     tile.textContent = letter;
     tile.dataset.index = index;
-
     tile.addEventListener('click', () => selectLetter(index));
-
-    letters.appendChild(tile);
+    document.getElementById('letters').appendChild(tile);
   });
 
-  updateDisplay();
+  statusElement.textContent = 'Pilih huruf mengikut urutan yang betul.';
+  statusElement.style.color = '#145c37';
 }
 
 function selectLetter(index) {
-  if (touchMode === false && !cameraActive) {
-    // Klik tetikus juga dibenarkan.
-  }
+  const tiles = document.querySelectorAll('.letter');
+  const tile = tiles[index];
 
-  const tiles = [...document.querySelectorAll('.letter')];
+  if (!tile || tile.classList.contains('used')) return;
 
-  if (tiles[index].classList.contains('used')) return;
+  tiles.forEach(item => item.classList.remove('selected'));
+  tile.classList.add('selected');
 
   selectedLetter = index;
-
-  tiles.forEach(tile => tile.classList.remove('selected'));
-  tiles[index].classList.add('selected');
-
-  document.getElementById('message').textContent =
-    'Huruf dipilih! Sekarang pilih ruang jawapan.';
+  statusElement.textContent = 'Bagus! Sekarang cubit pada kotak jawapan.';
+  statusElement.style.color = '#145c37';
 }
 
 function placeLetter(slotIndex) {
   if (selectedLetter === null) {
-    document.getElementById('message').textContent =
-      'Pilih satu huruf terlebih dahulu.';
+    statusElement.textContent = 'Pilih huruf dahulu!';
     return;
   }
 
-  const slots = [...document.querySelectorAll('.slot')];
-  const tiles = [...document.querySelectorAll('.letter')];
+  const tiles = document.querySelectorAll('.letter');
+  const slots = document.querySelectorAll('.slot');
 
-  if (slots[slotIndex].dataset.filled === 'true') return;
+  const tile = tiles[selectedLetter];
+  const slot = slots[slotIndex];
 
-  const chosen = targetWord[selectedLetter];
+  if (!tile || !slot || slot.textContent !== '') return;
 
-  if (chosen === targetWord[slotIndex]) {
-    slots[slotIndex].textContent = chosen;
-    slots[slotIndex].dataset.filled = 'true';
-    slots[slotIndex].classList.add('filled');
-
-    tiles[selectedLetter].classList.add('used');
-    tiles[selectedLetter].classList.remove('selected');
-
-    score++;
-    document.getElementById('score').textContent = score;
-
-    document.getElementById('message').textContent =
-      'Bagus! Jawapan betul. 🌟';
+  if (tile.textContent === sequence[slotIndex]) {
+    slot.textContent = tile.textContent;
+    slot.classList.add('filled');
+    tile.classList.add('used');
+    tile.classList.remove('selected');
 
     selectedLetter = null;
 
-    if (score === targetWord.length) {
-      setTimeout(showPoster, 500);
+    statusElement.textContent = 'Betul! Bagus sekali! 🌟';
+    statusElement.style.color = '#145c37';
+
+    if (document.querySelectorAll('.slot.filled').length === sequence.length) {
+      statusElement.textContent = 'Tahniah! Anda berjaya!';
+      setTimeout(showPoster,700);
     }
+
   } else {
-    document.getElementById('message').textContent =
-      'Belum tepat. Cuba huruf yang lain!';
+    statusElement.textContent = 'Belum tepat. Cuba lagi!';
+    statusElement.style.color = '#bd3333';
+    tile.classList.remove('selected');
+    selectedLetter = null;
   }
 }
 
-function updateDisplay() {
-  document.getElementById('score').textContent = score;
-}
-
-function restartGame() {
-  score = 0;
-  selectedLetter = null;
-  isPinching = false;
-  smoothX = null;
-  smoothY = null;
-
-  document.getElementById('message').textContent =
-    'Pilih huruf pertama untuk bermula.';
-
-  document.getElementById('successScreen').style.display = 'none';
-
-  createGame();
-}
-
-function showPoster() {
-  document.getElementById('successScreen').style.display = 'flex';
-}
-
-function closePoster() {
-  document.getElementById('successScreen').style.display = 'none';
-}
-
-function toggleTouch() {
-  touchMode = !touchMode;
-
-  if (touchMode) {
-    cursor.style.display = 'none';
-    document.getElementById('message').textContent =
-      'Mod skrin sentuh diaktifkan. Tekan huruf dan ruang jawapan.';
-  } else {
-    document.getElementById('message').textContent =
-      'Mod kamera boleh digunakan semula.';
-  }
-}
-
-function distance(a, b) {
-  return Math.hypot(a.x - b.x, a.y - b.y);
-}
-
-function findNearestTarget(clientX, clientY) {
-  const elements = [
+/* Cari sasaran paling hampir dengan cursor */
+function findNearestTarget(x,y) {
+  const candidates = [
     ...document.querySelectorAll('.letter:not(.used)'),
-    ...document.querySelectorAll('.slot:not([data-filled="true"])')
+    ...document.querySelectorAll('.slot:not(.filled)')
   ];
 
   let nearest = null;
-  let shortest = Infinity;
+  let nearestDistance = Infinity;
 
-  elements.forEach(element => {
+  candidates.forEach(element => {
     const rect = element.getBoundingClientRect();
 
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+    const centerX = rect.left + rect.width/2;
+    const centerY = rect.top + rect.height/2;
 
-    const d = Math.hypot(clientX - centerX, clientY - centerY);
+    const distance = Math.hypot(x-centerX,y-centerY);
 
-    if (d < shortest) {
-      shortest = d;
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
       nearest = element;
     }
   });
 
-  if (shortest < 115) return nearest;
+  // Kawasan sasaran lebih besar untuk memudahkan murid.
+  if (nearest && nearestDistance < 105) {
+    return nearest;
+  }
+
   return null;
 }
 
-function clearTargets() {
-  document.querySelectorAll('.target').forEach(element => {
-    element.classList.remove('target');
+function highlightTarget(target) {
+  document.querySelectorAll('.hover-target').forEach(item => {
+    item.classList.remove('hover-target');
   });
+
+  if (target) {
+    target.classList.add('hover-target');
+  }
 }
 
-function handleTargetClick(target) {
+function performTargetAction(target) {
   if (!target) return;
 
   if (target.classList.contains('letter')) {
     selectLetter(Number(target.dataset.index));
-  } else if (target.classList.contains('slot')) {
+  }
+  else if (target.classList.contains('slot')) {
     placeLetter(Number(target.dataset.index));
   }
 }
 
 function onHandResults(results) {
-  if (touchMode || !cameraActive) {
-    cursor.style.display = 'none';
-    return;
-  }
-
   if (!results.multiHandLandmarks ||
       results.multiHandLandmarks.length === 0) {
+
     cursor.style.display = 'none';
-    clearTargets();
+    highlightTarget(null);
+    activeTarget = null;
+    lastPinch = false;
+    smoothX = null;
+    smoothY = null;
     return;
   }
 
   const landmarks = results.multiHandLandmarks[0];
 
-  const indexFinger = landmarks[8];
   const thumb = landmarks[4];
+  const index = landmarks[8];
 
-  let x = currentFacingMode === 'user'
-    ? 1 - indexFinger.x
-    : indexFinger.x;
+  // Jarak cubitan. Nilai lebih besar = lebih mudah mencubit.
+  const distance = Math.hypot(
+    thumb.x-index.x,
+    thumb.y-index.y
+  );
 
-  let y = indexFinger.y;
+  // Histeresis: mudah mencubit dan tidak mudah terputus.
+  if (!isPinching && distance < 0.085) {
+    isPinching = true;
+  } else if (isPinching && distance > 0.13) {
+    isPinching = false;
+  }
 
-  const panelRect = gamePanel.getBoundingClientRect();
+  const x = currentFacingMode === 'user'
+    ? 1-index.x
+    : index.x;
 
-  const targetX = panelRect.left + x * panelRect.width;
-  const targetY = panelRect.top + y * panelRect.height;
+  const y = index.y;
 
+  const rect = gamePanel.getBoundingClientRect();
+
+  // Pemetaan seluruh pergerakan tangan ke panel permainan.
+  const targetX = rect.left + x*rect.width;
+  const targetY = rect.top + y*rect.height;
+
+  // Melicinkan pergerakan cursor.
   if (smoothX === null) {
     smoothX = targetX;
     smoothY = targetY;
   } else {
-    smoothX += (targetX - smoothX) * 0.45;
-    smoothY += (targetY - smoothY) * 0.45;
+    smoothX += (targetX-smoothX)*0.4;
+    smoothY += (targetY-smoothY)*0.4;
   }
 
   cursor.style.display = 'block';
-  cursor.style.left = smoothX + 'px';
-  cursor.style.top = smoothY + 'px';
+  cursor.style.left = smoothX+'px';
+  cursor.style.top = smoothY+'px';
 
-  const pinchDistance = distance(indexFinger, thumb);
-
-  // Kawalan cubitan dengan julat yang lebih mudah.
-  if (!isPinching && pinchDistance < 0.11) {
-    isPinching = true;
+  // Tukar gambar cursor mengikut gerakan tangan.
+  if (isPinching) {
     cursor.textContent = '🤏';
-
-    const target = findNearestTarget(smoothX, smoothY);
-    handleTargetClick(target);
-  }
-
-  if (isPinching && pinchDistance > 0.17) {
-    isPinching = false;
+    cursor.classList.add('pinching');
+  } else {
     cursor.textContent = '🖐️';
+    cursor.classList.remove('pinching');
   }
 
-  clearTargets();
+  // Kenal pasti sasaran paling hampir.
+  const nearest = findNearestTarget(smoothX,smoothY);
 
-  const nearest = findNearestTarget(smoothX, smoothY);
-  if (nearest) nearest.classList.add('target');
+  activeTarget = nearest;
+  highlightTarget(nearest);
 
-  if (!isPinching) {
-    cursor.textContent = '🖐️';
+  // Tindakan hanya apabila mula mencubit.
+  const now = Date.now();
+
+  if (isPinching && !lastPinch &&
+      now-lastPinchTime > 500) {
+
+    if (nearest) {
+      performTargetAction(nearest);
+      lastPinchTime = now;
+    } else {
+      statusElement.textContent =
+        'Gerakkan tangan lebih dekat dengan huruf atau kotak.';
+    }
   }
-}
 
-async function setupHands() {
-  if (hands) {
-    try {
-      await hands.close();
-    } catch (e) {}
-  }
-
-  hands = new Hands({
-    locateFile: file =>
-      `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-  });
-
-  hands.setOptions({
-    maxNumHands: 1,
-    modelComplexity: 1,
-    minDetectionConfidence: 0.65,
-    minTrackingConfidence: 0.65
-  });
-
-  hands.onResults(onHandResults);
+  lastPinch = isPinching;
 }
 
 async function startCamera() {
   try {
     await stopCamera();
 
-    document.getElementById('cameraStatus').textContent =
-      'Sedang mengaktifkan kamera...';
-
-    stream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
+    cameraStream = await navigator.mediaDevices.getUserMedia({
       video: {
-        facingMode: currentFacingMode,
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      }
+        facingMode: {ideal:currentFacingMode},
+        width: {ideal:1280},
+        height: {ideal:720}
+      },
+      audio: false
     });
 
-    video.srcObject = stream;
+    video.srcObject = cameraStream;
+    await video.play();
+
     video.style.transform =
       currentFacingMode === 'user' ? 'scaleX(-1)' : 'none';
 
-    await video.play();
+    hands = new Hands({
+      locateFile: file =>
+        `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+    });
 
-    await setupHands();
+    hands.setOptions({
+      maxNumHands: 1,
+      modelComplexity: 1,
+      minDetectionConfidence: 0.65,
+      minTrackingConfidence: 0.65
+    });
+
+    hands.onResults(onHandResults);
 
     cameraActive = true;
-    cursor.style.display = 'none';
+    processing = false;
+    touchMode = false;
+    isPinching = false;
+    lastPinch = false;
+    smoothX = null;
+    smoothY = null;
 
-    document.getElementById('cameraStatus').textContent =
-      'Kamera aktif! Gerakkan tangan di hadapan kamera.';
+    statusElement.textContent =
+      'Kamera aktif! Gerakkan tangan dan cuba cubit.';
 
     processCamera();
 
-  } catch (error) {
-    document.getElementById('cameraStatus').textContent =
-      'Tidak dapat mengaktifkan kamera. Sila benarkan akses kamera.';
+  } catch(error) {
     console.error(error);
+    statusElement.textContent =
+      'Kamera gagal dibuka. Benarkan akses kamera dan cuba lagi.';
   }
 }
 
 async function processCamera() {
-  while (cameraActive && hands) {
-    if (video.readyState >= 2) {
+  while (cameraActive && video.readyState >= 2 && hands) {
+    if (!processing) {
+      processing = true;
+
       try {
-        await hands.send({ image: video });
-      } catch (error) {
+        await hands.send({image:video});
+      } catch(error) {
         console.error(error);
       }
+
+      processing = false;
     }
 
     await new Promise(resolve => requestAnimationFrame(resolve));
@@ -687,13 +675,11 @@ async function processCamera() {
 
 async function stopCamera() {
   cameraActive = false;
+  processing = false;
 
-  cursor.style.display = 'none';
-  clearTargets();
-
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-    stream = null;
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
   }
 
   video.srcObject = null;
@@ -701,12 +687,21 @@ async function stopCamera() {
   if (hands) {
     try {
       await hands.close();
-    } catch (e) {}
+    } catch(error) {
+      console.warn(error);
+    }
     hands = null;
   }
 
-  document.getElementById('cameraStatus').textContent =
-    'Kamera telah dihentikan.';
+  cursor.style.display = 'none';
+  highlightTarget(null);
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  isPinching = false;
+  lastPinch = false;
+  smoothX = null;
+  smoothY = null;
 }
 
 async function switchCamera() {
@@ -716,11 +711,37 @@ async function switchCamera() {
   if (cameraActive) {
     await startCamera();
   } else {
-    document.getElementById('cameraStatus').textContent =
+    video.style.transform =
+      currentFacingMode === 'user' ? 'scaleX(-1)' : 'none';
+
+    statusElement.textContent =
       currentFacingMode === 'user'
         ? 'Kamera hadapan dipilih.'
         : 'Kamera belakang dipilih.';
   }
+}
+
+function toggleTouch() {
+  touchMode = !touchMode;
+
+  cursor.style.display = 'none';
+
+  statusElement.textContent = touchMode
+    ? 'Mod sentuh aktif. Sentuh huruf dan kotak jawapan.'
+    : 'Mod kamera aktif.';
+}
+
+function resetGame() {
+  document.getElementById('posterScreen').style.display = 'none';
+  createGame();
+}
+
+function showPoster() {
+  document.getElementById('posterScreen').style.display = 'flex';
+}
+
+function closePoster() {
+  resetGame();
 }
 
 createGame();
