@@ -23,7 +23,7 @@ html, body {
 
 body {
   background:
-    linear-gradient(rgba(4, 25, 35, .48), rgba(4, 25, 35, .65)),
+    linear-gradient(rgba(4,25,35,.48), rgba(4,25,35,.65)),
     url("masjid-negara.jpg") center center / cover no-repeat fixed;
 }
 
@@ -45,13 +45,13 @@ header {
 
 header h1 {
   margin: 0;
-  font-size: clamp(22px, 3vw, 36px);
+  font-size: clamp(22px,3vw,36px);
   color: #ffe58a;
 }
 
 header p {
   margin: 5px 0 0;
-  font-size: clamp(12px, 1.5vw, 16px);
+  font-size: clamp(12px,1.5vw,16px);
 }
 
 .main {
@@ -62,7 +62,7 @@ header p {
 }
 
 .panel {
-  background: rgba(255,255,255,.93);
+  background: rgba(255,255,255,.94);
   color: #173344;
   border: 3px solid #f5d77b;
   border-radius: 18px;
@@ -76,11 +76,12 @@ header p {
   flex-direction: column;
   justify-content: center;
   gap: 12px;
+  position: relative;
 }
 
 .section-title {
   font-weight: bold;
-  font-size: clamp(15px, 2vw, 21px);
+  font-size: clamp(15px,2vw,21px);
   text-align: center;
   color: #123e52;
 }
@@ -89,22 +90,22 @@ header p {
   display: flex;
   direction: rtl;
   justify-content: center;
-  gap: clamp(4px, 1vw, 12px);
+  gap: clamp(4px,1vw,12px);
   flex-wrap: wrap;
 }
 
 .slot {
-  width: clamp(42px, 7vw, 75px);
-  height: clamp(52px, 8vw, 82px);
+  width: clamp(42px,7vw,75px);
+  height: clamp(52px,8vw,82px);
   border: 3px dashed #4b91a8;
   border-radius: 12px;
   background: #e8f6fa;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(27px, 4vw, 43px);
+  font-size: clamp(27px,4vw,43px);
   color: #123e52;
-  font-family: "Times New Roman", serif;
+  font-family: "Times New Roman",serif;
 }
 
 .slot.filled {
@@ -116,13 +117,13 @@ header p {
   display: flex;
   direction: rtl;
   justify-content: center;
-  gap: clamp(5px, 1vw, 12px);
+  gap: clamp(5px,1vw,12px);
   flex-wrap: wrap;
 }
 
 .letter {
-  width: clamp(42px, 7vw, 70px);
-  height: clamp(48px, 7vw, 70px);
+  width: clamp(42px,7vw,70px);
+  height: clamp(48px,7vw,70px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -130,18 +131,19 @@ header p {
   color: #253746;
   border: 2px solid #e3a92b;
   border-radius: 12px;
-  font-size: clamp(27px, 4vw, 40px);
-  font-family: "Times New Roman", serif;
+  font-size: clamp(27px,4vw,40px);
+  font-family: "Times New Roman",serif;
   font-weight: bold;
-  cursor: grab;
+  cursor: pointer;
   user-select: none;
-  touch-action: none;
+  touch-action: manipulation;
   box-shadow: 0 3px 5px rgba(0,0,0,.15);
 }
 
 .letter.selected {
   background: #9be7a5;
   transform: scale(1.08);
+  border-color: #168344;
 }
 
 .letter.used {
@@ -154,13 +156,14 @@ header p {
   text-align: center;
   font-weight: bold;
   color: #145c37;
-  font-size: clamp(13px, 1.6vw, 17px);
+  font-size: clamp(13px,1.6vw,17px);
 }
 
 .camera-panel {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-height: 0;
 }
 
 .camera-title {
@@ -174,7 +177,6 @@ header p {
   width: 100%;
   flex: 1;
   min-height: 100px;
-  max-height: 100%;
   overflow: hidden;
   border-radius: 13px;
   background: #102b38;
@@ -212,7 +214,7 @@ button {
   border-radius: 10px;
   padding: 11px 16px;
   font-weight: bold;
-  font-size: clamp(11px, 1.3vw, 14px);
+  font-size: clamp(11px,1.3vw,14px);
   cursor: pointer;
   color: #173344;
   background: #ffdb70;
@@ -229,6 +231,28 @@ button.primary {
 
 button.danger {
   background: #ff9999;
+}
+
+/* CURSOR MAYA PADA PAPARAN PERMAINAN */
+
+#gameCursor {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  border: 4px solid #ffcc00;
+  background: rgba(255,204,0,.35);
+  border-radius: 50%;
+  z-index: 90;
+  pointer-events: none;
+  display: none;
+  transform: translate(-50%,-50%);
+  box-shadow: 0 0 12px rgba(255,204,0,.9);
+}
+
+#gameCursor.pinching {
+  background: #00e676;
+  border-color: #00e676;
+  transform: translate(-50%,-50%) scale(.8);
 }
 
 #posterScreen {
@@ -255,7 +279,7 @@ button.danger {
   padding: 12px 25px;
 }
 
-@media (max-width: 650px) {
+@media (max-width:650px) {
   #app {
     padding: 7px;
     gap: 6px;
@@ -298,7 +322,7 @@ button.danger {
   }
 }
 
-@media (max-height: 650px) {
+@media (max-height:650px) {
   header h1 {
     font-size: 22px;
   }
@@ -370,7 +394,8 @@ button.danger {
       </div>
 
       <div class="camera-hint">
-        Cubit ibu jari dan jari telunjuk untuk memilih huruf.
+        Gerakkan tangan untuk mengawal cursor pada ruang permainan.
+        Cubit untuk memilih.
       </div>
 
     </section>
@@ -387,6 +412,8 @@ button.danger {
 
 </div>
 
+<div id="gameCursor"></div>
+
 <div id="posterScreen">
   <img src="poster.png" alt="Tahniah!">
   <button onclick="closePoster()">↻ Main Semula</button>
@@ -402,45 +429,41 @@ let cameraActive = false;
 let touchMode = false;
 let currentFacingMode = 'user';
 let processing = false;
-let lastPinch = 0;
+let lastPinch = false;
 let lastPinchTime = 0;
-let handCursor = null;
 
 const video = document.getElementById('cameraPreview');
 const canvas = document.getElementById('cameraCanvas');
 const ctx = canvas.getContext('2d');
-const slotsElement = document.getElementById('slots');
-const lettersElement = document.getElementById('letters');
 const statusElement = document.getElementById('status');
+const cursor = document.getElementById('gameCursor');
 
 function createGame() {
-  slotsElement.innerHTML = '';
-  lettersElement.innerHTML = '';
+  document.getElementById('slots').innerHTML = '';
+  document.getElementById('letters').innerHTML = '';
   selectedLetter = null;
 
-  sequence.forEach((letter, index) => {
+  sequence.forEach((letter,index) => {
     const slot = document.createElement('div');
     slot.className = 'slot';
     slot.dataset.index = index;
-    slot.addEventListener('pointerup', () => placeLetter(index));
-    slotsElement.appendChild(slot);
+    slot.addEventListener('click', () => placeLetter(index));
+    document.getElementById('slots').appendChild(slot);
   });
 
-  sequence.forEach((letter, index) => {
+  sequence.forEach((letter,index) => {
     const tile = document.createElement('div');
     tile.className = 'letter';
     tile.textContent = letter;
     tile.dataset.index = index;
 
-    tile.addEventListener('pointerdown', (event) => {
-      event.preventDefault();
-      selectLetter(index);
-    });
+    tile.addEventListener('click', () => selectLetter(index));
 
-    lettersElement.appendChild(tile);
+    document.getElementById('letters').appendChild(tile);
   });
 
   statusElement.textContent = 'Pilih huruf mengikut urutan yang betul.';
+  statusElement.style.color = '#145c37';
 }
 
 function selectLetter(index) {
@@ -452,6 +475,8 @@ function selectLetter(index) {
   tiles.forEach(item => item.classList.remove('selected'));
   tile.classList.add('selected');
   selectedLetter = index;
+
+  statusElement.textContent = 'Sekarang pilih kotak jawapan.';
 }
 
 function placeLetter(slotIndex) {
@@ -481,11 +506,12 @@ function placeLetter(slotIndex) {
 
     if (document.querySelectorAll('.slot.filled').length === sequence.length) {
       statusElement.textContent = 'Tahniah! Anda berjaya!';
-      setTimeout(showPoster, 700);
+      setTimeout(showPoster,700);
     }
   } else {
     statusElement.textContent = 'Belum tepat. Cuba lagi!';
     statusElement.style.color = '#bd3333';
+
     tile.classList.remove('selected');
     selectedLetter = null;
   }
@@ -501,15 +527,19 @@ function showPoster() {
 }
 
 function closePoster() {
-  document.getElementById('posterScreen').style.display = 'none';
   resetGame();
 }
 
 function toggleTouch() {
   touchMode = !touchMode;
+
   statusElement.textContent = touchMode
-    ? 'Mod sentuh diaktifkan. Sentuh huruf dan ruang jawapan.'
+    ? 'Mod sentuh diaktifkan.'
     : 'Mod kamera diaktifkan.';
+
+  if (touchMode) {
+    cursor.style.display = 'none';
+  }
 }
 
 function setCameraMirror() {
@@ -552,14 +582,17 @@ async function startCamera() {
 
     cameraActive = true;
     processing = false;
-    statusElement.textContent = 'Kamera aktif. Cubit untuk memilih huruf.';
+    lastPinch = false;
+    touchMode = false;
+
+    statusElement.textContent = 'Kamera aktif. Gerakkan tangan dan cubit untuk memilih.';
 
     processCamera();
 
-  } catch (error) {
+  } catch(error) {
     console.error(error);
     statusElement.textContent =
-      'Kamera tidak dapat dibuka. Benarkan akses kamera dan cuba lagi.';
+      'Kamera gagal dibuka. Benarkan akses kamera dan cuba lagi.';
   }
 }
 
@@ -569,8 +602,8 @@ async function processCamera() {
       processing = true;
 
       try {
-        await hands.send({ image: video });
-      } catch (error) {
+        await hands.send({image:video});
+      } catch(error) {
         console.error(error);
       }
 
@@ -585,11 +618,12 @@ function onHandResults(results) {
   canvas.width = video.videoWidth || 640;
   canvas.height = video.videoHeight || 480;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
   if (!results.multiHandLandmarks ||
       results.multiHandLandmarks.length === 0) {
-    handCursor = null;
+    cursor.style.display = 'none';
+    lastPinch = false;
     return;
   }
 
@@ -599,44 +633,53 @@ function onHandResults(results) {
   const index = landmarks[8];
 
   const distance = Math.hypot(
-    thumb.x - index.x,
-    thumb.y - index.y
+    thumb.x-index.x,
+    thumb.y-index.y
   );
 
-  const now = Date.now();
   const isPinching = distance < 0.055;
 
+  // X diterbalikkan untuk kamera hadapan.
   const x = currentFacingMode === 'user'
-    ? 1 - index.x
+    ? 1-index.x
     : index.x;
 
   const y = index.y;
 
-  handCursor = { x, y };
+  // Pemetaan ke seluruh kawasan permainan.
+  const gamePanel = document.querySelector('.game-panel');
+  const rect = gamePanel.getBoundingClientRect();
 
-  ctx.beginPath();
-  ctx.arc(index.x * canvas.width, index.y * canvas.height, 12, 0, Math.PI * 2);
-  ctx.fillStyle = isPinching ? '#00ff66' : '#ffcc00';
-  ctx.fill();
+  const screenX = rect.left + x*rect.width;
+  const screenY = rect.top + y*rect.height;
 
-  if (isPinching && !lastPinch && now - lastPinchTime > 700) {
-    handleHandPinch(x, y);
+  cursor.style.display = 'block';
+  cursor.style.left = screenX+'px';
+  cursor.style.top = screenY+'px';
+
+  if (isPinching) {
+    cursor.classList.add('pinching');
+  } else {
+    cursor.classList.remove('pinching');
+  }
+
+  const now = Date.now();
+
+  // Satu tindakan bagi setiap cubitan.
+  if (isPinching && !lastPinch &&
+      now-lastPinchTime > 700) {
+
+    handleHandPinch(screenX,screenY);
     lastPinchTime = now;
   }
 
   lastPinch = isPinching;
 }
 
-function handleHandPinch(x, y) {
+function handleHandPinch(screenX,screenY) {
   if (touchMode) return;
 
-  const gamePanel = document.querySelector('.game-panel');
-  const rect = gamePanel.getBoundingClientRect();
-
-  const screenX = rect.left + x * rect.width;
-  const screenY = rect.top + y * rect.height;
-
-  const target = document.elementFromPoint(screenX, screenY);
+  const target = document.elementFromPoint(screenX,screenY);
 
   if (!target) return;
 
@@ -645,7 +688,8 @@ function handleHandPinch(x, y) {
 
   if (tile && !tile.classList.contains('used')) {
     selectLetter(Number(tile.dataset.index));
-  } else if (slot) {
+  }
+  else if (slot) {
     placeLetter(Number(slot.dataset.index));
   }
 }
@@ -664,24 +708,28 @@ async function stopCamera() {
   if (hands) {
     try {
       await hands.close();
-    } catch (error) {
+    } catch(error) {
       console.warn(error);
     }
     hands = null;
   }
 
-  lastPinch = 0;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  cursor.style.display = 'none';
+  cursor.classList.remove('pinching');
+
+  lastPinch = false;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 }
 
 async function switchCamera() {
   currentFacingMode =
     currentFacingMode === 'user' ? 'environment' : 'user';
 
+  setCameraMirror();
+
   if (cameraActive) {
     await startCamera();
   } else {
-    setCameraMirror();
     statusElement.textContent =
       currentFacingMode === 'user'
         ? 'Kamera hadapan dipilih.'
@@ -689,6 +737,7 @@ async function switchCamera() {
   }
 }
 
+// Mula permainan.
 createGame();
 </script>
 
