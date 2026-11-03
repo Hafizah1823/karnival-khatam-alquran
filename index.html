@@ -9,7 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -129,14 +131,14 @@ h1 {
   position: relative;
 }
 
-#cameraVideo { display: none; }
+#cameraVideo {
+  display: none;
+}
 
 #cameraPreview {
   width: 100%;
   height: 100%;
   object-fit: contain;
-
-  /* PAPARAN KAMERA MIRROR */
   transform: scaleX(-1);
 }
 
@@ -159,6 +161,12 @@ h1 {
   font-weight: bold;
   color: #176b57;
   min-height: 42px;
+}
+
+#cameraMode {
+  margin: 10px 0;
+  font-weight: bold;
+  color: #087f5b;
 }
 
 #cursor {
@@ -198,10 +206,26 @@ button {
   cursor: pointer;
 }
 
-button:disabled { opacity: .5; }
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
 
-#touchMode { background: #1976d2; }
-#restartButton { background: #f57c00; }
+#switchCamera {
+  background: #6a4cba;
+}
+
+#stopCamera {
+  background: #d84343;
+}
+
+#touchMode {
+  background: #1976d2;
+}
+
+#restartButton {
+  background: #f57c00;
+}
 
 #winScreen {
   display: none;
@@ -227,21 +251,31 @@ button:disabled { opacity: .5; }
   object-fit: contain;
 }
 
-#winScreen h2 { display: none; }
-
 #winScreen button {
   position: absolute;
   bottom: 20px;
   right: 20px;
   z-index: 30001;
-  opacity: .85;
+  opacity: .9;
 }
 
 @media(max-width:600px) {
-  body { padding: 10px; }
-  #interactionArea { padding: 12px 5px; }
-  #answerSlots, #letterBank { gap: 6px; }
-  #cameraSection { padding: 10px; }
+  body {
+    padding: 10px;
+  }
+
+  #interactionArea {
+    padding: 12px 5px;
+  }
+
+  #answerSlots,
+  #letterBank {
+    gap: 6px;
+  }
+
+  #cameraSection {
+    padding: 10px;
+  }
 }
 </style>
 </head>
@@ -249,48 +283,94 @@ button:disabled { opacity: .5; }
 <body>
 
 <h1>🌟 Misi Susun Huruf Hijaiyah 🌟</h1>
-<p class="subtitle">Susun huruf mengikut urutan yang betul untuk melengkapkan misi!</p>
+<p class="subtitle">
+  Susun huruf mengikut urutan yang betul untuk melengkapkan misi!
+</p>
 
 <div id="game">
 
   <div id="interactionArea">
-    <div class="section-title">1. Susun huruf di ruang jawapan</div>
+
+    <div class="section-title">
+      1. Susun huruf di ruang jawapan
+    </div>
+
     <div id="answerSlots"></div>
 
-    <div class="section-title">2. Pilih huruf yang betul</div>
+    <div class="section-title">
+      2. Pilih huruf yang betul
+    </div>
+
     <div id="letterBank"></div>
+
   </div>
 
   <div id="cameraSection">
-    <div class="camera-heading">📷 Kamera Pengesan Jari</div>
 
-    <div id="cameraFrame">
-      <video id="cameraVideo" autoplay playsinline muted></video>
-      <canvas id="cameraPreview"></canvas>
-      <div id="cameraPlaceholder">
-        Tekan butang “Aktifkan Kamera” untuk mula
-      </div>
+    <div class="camera-heading">
+      📷 Kamera Pengesan Jari
     </div>
 
-    <div id="cameraStatus">Kamera belum diaktifkan</div>
+    <div id="cameraFrame">
 
-    <button id="startCamera">📷 Aktifkan Kamera</button>
-    <button id="stopCamera" disabled>Matikan Kamera</button>
-    <button id="touchMode">🖐️ Mod Skrin Sentuh</button>
+      <video
+        id="cameraVideo"
+        autoplay
+        playsinline
+        muted>
+      </video>
+
+      <canvas id="cameraPreview"></canvas>
+
+      <div id="cameraPlaceholder">
+        Tekan butang Aktifkan Kamera untuk mula
+      </div>
+
+    </div>
+
+    <div id="cameraMode">
+      Mod: Kamera Hadapan
+    </div>
+
+    <div id="cameraStatus">
+      Kamera belum diaktifkan
+    </div>
+
+    <button id="startCamera">
+      📷 Aktifkan Kamera
+    </button>
+
+    <button id="switchCamera" disabled>
+      🔄 Tukar Kamera
+    </button>
+
+    <button id="stopCamera" disabled>
+      Matikan Kamera
+    </button>
+
+    <button id="touchMode">
+      🖐️ Mod Skrin Sentuh
+    </button>
+
   </div>
 
-  <button id="restartButton">↻ Mula Semula</button>
+  <button id="restartButton">
+    ↻ Mula Semula
+  </button>
+
 </div>
 
 <div id="cursor"></div>
 
 <div id="winScreen">
-  <h2>TAHNIAH!</h2>
   <img src="./poster.png" alt="Poster Tahniah">
-  <button onclick="restartGame()">↻ Main Semula</button>
+  <button onclick="restartGame()">
+    ↻ Main Semula
+  </button>
 </div>
 
 <script>
+
 /* =========================================
    TETAPAN PERMAINAN
 ========================================= */
@@ -310,6 +390,7 @@ const placeholder = document.getElementById('cameraPlaceholder');
 const cursor = document.getElementById('cursor');
 
 const startButton = document.getElementById('startCamera');
+const switchButton = document.getElementById('switchCamera');
 const stopButton = document.getElementById('stopCamera');
 
 let currentDrag = null;
@@ -320,6 +401,8 @@ let cameraActive = false;
 let cameraBusy = false;
 let pinchState = false;
 let touchMode = false;
+
+let currentFacingMode = 'user';
 
 let pinchFrames = 0;
 let releaseFrames = 0;
@@ -333,19 +416,25 @@ const PINCH_START = 0.30;
 const PINCH_RELEASE = 0.43;
 const SMOOTHING = 0.35;
 
+
 /* =========================================
    BINA PERMAINAN
 ========================================= */
 
 function createGame() {
+
   answerSlots.innerHTML = '';
   letterBank.innerHTML = '';
 
   targetLetters.forEach((letter, index) => {
+
     const slot = document.createElement('div');
+
     slot.className = 'slot';
     slot.dataset.index = index;
+
     answerSlots.appendChild(slot);
+
   });
 
   const letters = targetLetters.map((letter, index) => ({
@@ -356,51 +445,72 @@ function createGame() {
   letters.sort(() => Math.random() - 0.5);
 
   letters.forEach(item => {
+
     const card = document.createElement('div');
+
     card.className = 'letter-card';
     card.textContent = item.letter;
     card.dataset.letter = item.letter;
     card.dataset.index = item.index;
 
     addTouchEvents(card);
+
     letterBank.appendChild(card);
+
   });
+
 }
+
 
 /* =========================================
    MOD SKRIN SENTUH
 ========================================= */
 
 function addTouchEvents(card) {
+
   card.addEventListener('pointerdown', event => {
+
     if (cameraActive && !touchMode) return;
 
     event.preventDefault();
+
     startDrag(card, event.clientX, event.clientY);
+
   });
+
 }
 
 document.addEventListener('pointermove', event => {
+
   if (!currentDrag) return;
 
   if (touchMode || event.pointerType === 'touch') {
+
     moveDrag(event.clientX, event.clientY);
+
   }
+
 });
 
 document.addEventListener('pointerup', event => {
+
   if (!currentDrag) return;
 
   if (touchMode || event.pointerType === 'touch') {
+
     finishDrag(event.clientX, event.clientY);
+
   }
+
 });
+
 
 /* =========================================
    SISTEM SERET HURUF
 ========================================= */
 
 function startDrag(card, x, y) {
+
   if (currentDrag) return;
 
   const parent = card.parentElement;
@@ -415,9 +525,7 @@ function startDrag(card, x, y) {
   currentDrag = {
     card,
     parent,
-    nextSibling,
-    width: rect.width,
-    height: rect.height
+    nextSibling
   };
 
   document.body.appendChild(card);
@@ -427,20 +535,25 @@ function startDrag(card, x, y) {
   card.style.height = rect.height + 'px';
 
   moveDrag(x, y);
+
 }
 
 function moveDrag(x, y) {
+
   if (!currentDrag) return;
 
   const card = currentDrag.card;
+
   card.style.left = x + 'px';
   card.style.top = y + 'px';
 
   cursor.style.left = x + 'px';
   cursor.style.top = y + 'px';
+
 }
 
 function finishDrag(x, y) {
+
   if (!currentDrag) return;
 
   const drag = currentDrag;
@@ -450,6 +563,7 @@ function finishDrag(x, y) {
   const slot = target ? target.closest('.slot') : null;
 
   card.classList.remove('dragging');
+
   card.style.left = '';
   card.style.top = '';
   card.style.width = '';
@@ -458,55 +572,77 @@ function finishDrag(x, y) {
   currentDrag = null;
 
   if (slot && slot.children.length === 0) {
+
     const expectedIndex = Number(slot.dataset.index);
     const actualLetter = card.dataset.letter;
     const expectedLetter = targetLetters[expectedIndex];
 
     if (actualLetter === expectedLetter) {
+
       slot.appendChild(card);
       slot.classList.add('filled');
+
       playSound(true);
 
       if (allCompleted()) {
         setTimeout(showWinner, 500);
       }
+
       return;
+
     }
+
   }
 
   restoreCard(drag);
   playSound(false);
+
 }
 
 function restoreCard(drag) {
-  if (drag.nextSibling && drag.nextSibling.parentElement === drag.parent) {
+
+  if (drag.nextSibling &&
+      drag.nextSibling.parentElement === drag.parent) {
+
     drag.parent.insertBefore(drag.card, drag.nextSibling);
+
   } else {
+
     drag.parent.appendChild(drag.card);
+
   }
 
   if (drag.parent.classList.contains('slot')) {
     drag.parent.classList.add('filled');
   }
+
 }
+
 
 /* =========================================
    SEMAK JAWAPAN
 ========================================= */
 
 function allCompleted() {
+
   return [...answerSlots.children].every(
     slot => slot.children.length > 0
   );
+
 }
+
 
 /* =========================================
    AUDIO
 ========================================= */
 
 function playSound(correct) {
+
   try {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+    const AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
+
     const audio = new AudioContextClass();
 
     const oscillator = audio.createOscillator();
@@ -519,6 +655,7 @@ function playSound(correct) {
     oscillator.type = 'sine';
 
     gain.gain.setValueAtTime(0.15, audio.currentTime);
+
     gain.gain.exponentialRampToValueAtTime(
       0.001,
       audio.currentTime + 0.2
@@ -526,81 +663,126 @@ function playSound(correct) {
 
     oscillator.start();
     oscillator.stop(audio.currentTime + 0.2);
+
   } catch (error) {}
+
 }
+
 
 /* =========================================
    POSTER FULLSCREEN
 ========================================= */
 
 async function showWinner() {
+
   stopCamera();
 
   const winScreen = document.getElementById('winScreen');
+
   winScreen.style.display = 'flex';
 
   try {
+
     if (!document.fullscreenElement) {
       await winScreen.requestFullscreen();
     }
+
   } catch (error) {
+
     console.log('Fullscreen tidak disokong:', error);
+
   }
+
 }
 
 async function restartGame() {
+
   if (document.fullscreenElement) {
+
     try {
       await document.exitFullscreen();
     } catch (error) {}
+
   }
 
   document.getElementById('winScreen').style.display = 'none';
+
   restartGameContent();
+
 }
 
 function restartGameContent() {
+
   stopCamera();
+
   currentDrag = null;
+
   cursor.style.display = 'none';
+
   createGame();
+
   touchMode = false;
+
   setStatus('Permainan dimulakan semula.');
+
 }
 
+
 /* =========================================
-   KURSOR
+   KURSOR DAN KOORDINAT
 ========================================= */
 
 function updateCursor(x, y, mode) {
+
   cursor.style.display = 'block';
+
   cursor.style.left = x + 'px';
   cursor.style.top = y + 'px';
 
   cursor.classList.remove('pinching', 'dragging');
 
-  if (mode === 'pinch') cursor.classList.add('pinching');
-  if (mode === 'drag') cursor.classList.add('dragging');
+  if (mode === 'pinch') {
+    cursor.classList.add('pinching');
+  }
+
+  if (mode === 'drag') {
+    cursor.classList.add('dragging');
+  }
+
 }
 
 function mapHandToGame(indexX, indexY) {
+
   const rect = interactionArea.getBoundingClientRect();
 
   /*
-    Kamera dipaparkan secara mirror.
-    Oleh itu, koordinat X kursor diterbalikkan.
+    Kamera hadapan = mirror.
+    Kamera belakang = normal.
   */
-  const x = rect.left + (1 - indexX) * rect.width;
+
+  const mappedX =
+    currentFacingMode === 'user'
+      ? (1 - indexX)
+      : indexX;
+
+  const x = rect.left + mappedX * rect.width;
   const y = rect.top + indexY * rect.height;
 
   return {x, y};
+
 }
 
 function distance(a, b) {
-  return Math.hypot(a.x - b.x, a.y - b.y);
+
+  return Math.hypot(
+    a.x - b.x,
+    a.y - b.y
+  );
+
 }
 
 function setStatus(message, mode = 'normal') {
+
   let color = '#176b57';
 
   if (mode === 'pinch') color = '#bd8300';
@@ -608,20 +790,22 @@ function setStatus(message, mode = 'normal') {
 
   statusBox.style.color = color;
   statusBox.textContent = message;
+
 }
+
 
 /* =========================================
    MEDIAPIPE
 ========================================= */
 
 function onHandResults(results) {
+
   if (!cameraActive) return;
 
   previewCtx.clearRect(0, 0, preview.width, preview.height);
 
   if (results.image) {
-    // Imej asal dihantar ke canvas.
-    // CSS akan memirror paparan kamera.
+
     previewCtx.drawImage(
       results.image,
       0,
@@ -629,37 +813,48 @@ function onHandResults(results) {
       preview.width,
       preview.height
     );
+
   }
 
   const handsFound = results.multiHandLandmarks;
 
   if (!handsFound || handsFound.length === 0) {
+
     lostFrames++;
 
     if (lostFrames > 8) {
+
       pinchFrames = 0;
       releaseFrames = 0;
       pinchState = false;
       smoothedRatio = null;
 
       if (currentDrag) {
+
         const drag = currentDrag;
         currentDrag = null;
 
         drag.card.classList.remove('dragging');
+
         drag.card.style.left = '';
         drag.card.style.top = '';
         drag.card.style.width = '';
         drag.card.style.height = '';
 
         restoreCard(drag);
+
       }
 
       cursor.style.display = 'none';
-      setStatus('Tangan tidak dikesan. Tunjukkan tangan di hadapan kamera.');
+
+      setStatus(
+        'Tangan tidak dikesan. Tunjukkan tangan di hadapan kamera.'
+      );
+
     }
 
     return;
+
   }
 
   lostFrames = 0;
@@ -681,65 +876,107 @@ function onHandResults(results) {
   const ratio = pinchDistance / palmSize;
 
   if (smoothedRatio === null) {
+
     smoothedRatio = ratio;
+
   } else {
+
     smoothedRatio =
       smoothedRatio * (1 - SMOOTHING) +
       ratio * SMOOTHING;
+
   }
 
   const position = mapHandToGame(index.x, index.y);
 
   if (smoothX === null) {
+
     smoothX = position.x;
     smoothY = position.y;
+
   } else {
+
     smoothX = smoothX * 0.65 + position.x * 0.35;
     smoothY = smoothY * 0.65 + position.y * 0.35;
+
   }
 
   const x = smoothX;
   const y = smoothY;
 
   if (smoothedRatio < PINCH_START) {
+
     pinchFrames++;
     releaseFrames = 0;
+
   } else if (smoothedRatio > PINCH_RELEASE) {
+
     releaseFrames++;
     pinchFrames = 0;
+
   } else {
+
     pinchFrames = 0;
     releaseFrames = 0;
+
   }
 
   if (!pinchState && pinchFrames >= 2) {
+
     pinchState = true;
 
     if (!currentDrag) {
+
       const element = document.elementFromPoint(x, y);
-      const card = element ? element.closest('.letter-card') : null;
+
+      const card = element
+        ? element.closest('.letter-card')
+        : null;
 
       if (card && !card.classList.contains('dragging')) {
         startDrag(card, x, y);
       }
+
     }
+
   }
 
   if (pinchState) {
+
     if (currentDrag) {
+
       moveDrag(x, y);
+
       updateCursor(x, y, 'drag');
-      setStatus('🟦 Huruf sedang dipegang! Gerakkan ke ruang jawapan.', 'drag');
+
+      setStatus(
+        '🟦 Huruf sedang dipegang! Gerakkan ke ruang jawapan.',
+        'drag'
+      );
+
     } else {
+
       updateCursor(x, y, 'pinch');
-      setStatus('🟡 Cubitan dikesan. Halakan jari pada huruf.', 'pinch');
+
+      setStatus(
+        '🟡 Cubitan dikesan. Halakan jari pada huruf.',
+        'pinch'
+      );
+
     }
+
   } else {
+
     updateCursor(x, y, 'normal');
-    setStatus('🟢 Tangan dikesan. Cubit ibu jari dan telunjuk.');
+
+    setStatus(
+      '🟢 Tangan dikesan. Cubit ibu jari dan telunjuk.'
+    );
+
   }
 
   if (pinchState && releaseFrames >= 3) {
+
     pinchState = false;
     pinchFrames = 0;
     releaseFrames = 0;
@@ -749,9 +986,15 @@ function onHandResults(results) {
     }
 
     updateCursor(x, y, 'normal');
-    setStatus('🟢 Tangan dikesan. Cubit untuk pilih huruf.');
+
+    setStatus(
+      '🟢 Tangan dikesan. Cubit untuk pilih huruf.'
+    );
+
   }
+
 }
+
 
 /* =========================================
    PEMPROSESAN IMEJ
@@ -761,23 +1004,30 @@ const processingCanvas = document.createElement('canvas');
 const processingCtx = processingCanvas.getContext('2d');
 
 function processFrame() {
+
   if (!cameraActive || !hands || cameraBusy) return;
 
   if (video.readyState < 2) {
+
     requestAnimationFrame(processFrame);
     return;
+
   }
 
   cameraBusy = true;
 
   try {
+
     const width = video.videoWidth;
     const height = video.videoHeight;
 
     if (!width || !height) {
+
       cameraBusy = false;
+
       requestAnimationFrame(processFrame);
       return;
+
     }
 
     preview.width = width;
@@ -786,67 +1036,113 @@ function processFrame() {
     processingCanvas.width = width;
     processingCanvas.height = height;
 
-    processingCtx.filter = 'brightness(1.12) contrast(1.12)';
-    processingCtx.drawImage(video, 0, 0, width, height);
+    processingCtx.filter =
+      'brightness(1.12) contrast(1.12)';
 
-    hands.send({image: processingCanvas})
-      .catch(error => {
-        console.error('Ralat MediaPipe:', error);
-      })
-      .finally(() => {
-        cameraBusy = false;
+    processingCtx.drawImage(
+      video,
+      0,
+      0,
+      width,
+      height
+    );
 
-        if (cameraActive) {
-          requestAnimationFrame(processFrame);
-        }
-      });
+    hands.send({
+      image: processingCanvas
+    })
+    .catch(error => {
+
+      console.error('Ralat MediaPipe:', error);
+
+    })
+    .finally(() => {
+
+      cameraBusy = false;
+
+      if (cameraActive) {
+        requestAnimationFrame(processFrame);
+      }
+
+    });
 
   } catch (error) {
+
     console.error(error);
+
     cameraBusy = false;
 
     if (cameraActive) {
       requestAnimationFrame(processFrame);
     }
+
   }
+
 }
+
 
 /* =========================================
    AKTIFKAN KAMERA
 ========================================= */
 
 async function startCamera() {
+
   try {
+
     if (!navigator.mediaDevices ||
         !navigator.mediaDevices.getUserMedia) {
-      throw new Error('Gunakan HTTPS untuk mengakses kamera.');
+
+      throw new Error(
+        'Gunakan HTTPS untuk mengakses kamera.'
+      );
+
     }
 
     setStatus('Sedang mengaktifkan kamera...');
 
     cameraStream = await navigator.mediaDevices.getUserMedia({
+
       audio: false,
+
       video: {
-        facingMode: 'user',
-        width: {ideal: 1280},
-        height: {ideal: 720},
-        frameRate: {ideal: 30}
+
+        facingMode: {
+          ideal: currentFacingMode
+        },
+
+        width: {
+          ideal: 1280
+        },
+
+        height: {
+          ideal: 720
+        },
+
+        frameRate: {
+          ideal: 30
+        }
+
       }
+
     });
 
     video.srcObject = cameraStream;
+
     await video.play();
 
     hands = new Hands({
+
       locateFile: file =>
         `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+
     });
 
     hands.setOptions({
+
       maxNumHands: 1,
       modelComplexity: 1,
       minDetectionConfidence: 0.45,
       minTrackingConfidence: 0.45
+
     });
 
     hands.onResults(onHandResults);
@@ -854,9 +1150,25 @@ async function startCamera() {
     cameraActive = true;
     touchMode = false;
 
+    /*
+      Hadapan = mirror.
+      Belakang = tidak mirror.
+    */
+
+    preview.style.transform =
+      currentFacingMode === 'user'
+        ? 'scaleX(-1)'
+        : 'none';
+
+    document.getElementById('cameraMode').textContent =
+      currentFacingMode === 'user'
+        ? 'Mod: Kamera Hadapan (Mirror)'
+        : 'Mod: Kamera Belakang (Normal)';
+
     placeholder.style.display = 'none';
 
     startButton.disabled = true;
+    switchButton.disabled = false;
     stopButton.disabled = false;
 
     pinchState = false;
@@ -868,46 +1180,94 @@ async function startCamera() {
     smoothX = null;
     smoothY = null;
 
-    setStatus('Kamera mirror aktif. Tunjukkan tangan di hadapan kamera.');
+    setStatus('Kamera aktif. Tunjukkan tangan di hadapan kamera.');
 
     requestAnimationFrame(processFrame);
 
   } catch (error) {
+
     console.error(error);
 
-    setStatus('Kamera gagal diaktifkan. Semak kebenaran kamera dan cuba semula.');
+    setStatus(
+      'Kamera gagal diaktifkan. Semak kebenaran kamera dan cuba semula.'
+    );
 
     stopCamera();
+
   }
+
 }
+
+
+/* =========================================
+   TUKAR KAMERA HADAPAN / BELAKANG
+========================================= */
+
+async function switchCamera() {
+
+  if (!cameraActive) return;
+
+  switchButton.disabled = true;
+
+  currentFacingMode =
+    currentFacingMode === 'user'
+      ? 'environment'
+      : 'user';
+
+  setStatus('Sedang menukar kamera...');
+
+  stopCamera();
+
+  try {
+
+    await startCamera();
+
+  } finally {
+
+    switchButton.disabled = !cameraActive;
+
+  }
+
+}
+
 
 /* =========================================
    MATIKAN KAMERA
 ========================================= */
 
 function stopCamera() {
+
   cameraActive = false;
   cameraBusy = false;
 
   if (cameraStream) {
-    cameraStream.getTracks().forEach(track => track.stop());
+
+    cameraStream.getTracks().forEach(track => {
+      track.stop();
+    });
+
     cameraStream = null;
+
   }
 
   video.srcObject = null;
 
   if (hands) {
+
     try {
       hands.close();
     } catch (error) {}
 
     hands = null;
+
   }
 
   startButton.disabled = false;
+  switchButton.disabled = true;
   stopButton.disabled = true;
 
   placeholder.style.display = 'flex';
+
   cursor.style.display = 'none';
 
   pinchState = false;
@@ -920,27 +1280,48 @@ function stopCamera() {
   smoothY = null;
 
   setStatus('Kamera dimatikan.');
+
 }
+
 
 /* =========================================
    MOD SKRIN SENTUH
 ========================================= */
 
 document.getElementById('touchMode').addEventListener('click', () => {
+
   stopCamera();
+
   touchMode = true;
 
-  setStatus('Mod skrin sentuh aktif. Seret huruf ke ruang jawapan.');
+  setStatus(
+    'Mod skrin sentuh aktif. Seret huruf ke ruang jawapan.'
+  );
+
 });
 
+
+/* =========================================
+   BUTANG
+========================================= */
+
 startButton.addEventListener('click', startCamera);
+
+switchButton.addEventListener('click', switchCamera);
+
 stopButton.addEventListener('click', stopCamera);
 
 document.getElementById('restartButton')
   .addEventListener('click', restartGame);
 
+
+/* =========================================
+   MULAKAN PERMAINAN
+========================================= */
+
 createGame();
 
 </script>
+
 </body>
 </html>
